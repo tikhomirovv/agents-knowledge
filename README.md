@@ -45,15 +45,38 @@ agents/
 │       ├── role.md             # Роль + инструкции + индекс знаний
 │       └── knowledge/          # База знаний агента
 │           └── [knowledge_files].md
-└── management/                 # Управление проектом
-    ├── instructions/           # Инструкции для LLM
-    │   ├── create_agent.md     # Создание нового агента
-    │   └── add_knowledge.md    # Добавление знаний к агенту
-    └── templates/              # Шаблоны для создания агентов
-        ├── role.md
-        └── knowledge.md
+├── management/                 # Управление проектом
+│   ├── instructions/           # Инструкции для LLM
+│   │   ├── create_agent.md     # Создание нового агента
+│   │   └── add_knowledge.md    # Добавление знаний к агенту
+│   └── templates/              # Шаблоны для создания агентов
+│       ├── role.md
+│       └── knowledge.md
+├── .anthropics-skills/         # Git submodule: официальные примеры навыков
+│   ├── skills/                 # Примеры навыков от Anthropic
+│   ├── spec/                   # Спецификация Agent Skills
+│   └── template/               # Шаблон для создания навыка
+└── .cursor/                    # Конфигурация для Cursor IDE
+    └── skills/                 # Символические ссылки на навыки
+        └── skill-creator/      # Ссылка на skill-creator из submodule
+```
+
+## Git Submodule
+
+Проект использует git submodule для доступа к официальным примерам навыков от Anthropic:
+
+- **Репозиторий**: [anthropics/skills](https://github.com/anthropics/skills)
+- **Путь**: `.anthropics-skills/`
+- **Обновление**: `git submodule update --remote`
+
+## Символические ссылки
+
+Для создания символической ссылки на навык из submodule (например, для использования в Cursor):
+
+```powershell
+New-Item -ItemType SymbolicLink -Path ".cursor\skills\skill-creator" -Target ".anthropics-skills\skills\skill-creator"
 ```
 
 ## Обновлено
 
-*Последнее обновление: 18 октября 2025*
+*Последнее обновление: 15 января 2026*
