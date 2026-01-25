@@ -1,0 +1,12 @@
+# Dependencies
+node_modules/
+
+# Bun
+.bun/
+
+# Logs
+*.log
+
+# Transcripts (optional - uncomment if you don't want to commit transcripts)
+transcripts/**/*.json
+transcripts/**/*.txt

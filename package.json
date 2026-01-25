@@ -1,0 +1,15 @@
+{
+  "name": "ai-agents-management",
+  "version": "1.0.0",
+  "description": "AI Agents Management",
+  "type": "module",
+  "scripts": {
+    "fetch-transcript": "bun run scripts/fetch-transcript.ts"
+  },
+  "dependencies": {
+    "youtube-transcript-plus": "^1.1.2"
+  },
+  "devDependencies": {
+    "@types/bun": "latest"
+  }
+}

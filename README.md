@@ -9,6 +9,7 @@
 - Накопления и организации баз знаний для каждого агента
 - Стандартизации работы с агентами через единые форматы
 - Удобного управления коллекцией агентов
+- Получения транскрипций с YouTube видео для последующей обработки в базу знаний
 
 ## Как использовать
 
@@ -52,13 +53,20 @@ agents/
 │   └── templates/              # Шаблоны для создания агентов
 │       ├── role.md
 │       └── knowledge.md
+├── scripts/                    # Скрипты для работы с проектом
+│   ├── fetch-transcript.ts     # Получение транскрипций с YouTube
+│   └── README.md               # Инструкции по использованию скриптов
+├── transcripts/                # Папка для сохранения транскрипций
 ├── .anthropics-skills/         # Git submodule: официальные примеры навыков
 │   ├── skills/                 # Примеры навыков от Anthropic
 │   ├── spec/                   # Спецификация Agent Skills
 │   └── template/               # Шаблон для создания навыка
 └── .cursor/                    # Конфигурация для Cursor IDE
+    ├── commands/               # Команды для Cursor AI
+    │   ├── process-to-knowledge.md  # Обработка текста в знания
+    │   └── smart-commit.md     # Генерация сообщений коммитов
     └── skills/                 # Символические ссылки на навыки
-        └── skill-creator/      # Ссылка на skill-creator из submodule
+        └── skill-creator/       # Ссылка на skill-creator из submodule
 ```
 
 ## Git Submodule
