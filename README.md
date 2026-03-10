@@ -2,20 +2,42 @@
 
 Система для управления конфигурациями ИИ-агентов: роли, базы знаний и навыки (skills) в формате, совместимом с Cursor.
 
-## Назначение
+## Два типа навыков
 
-- **Skills (навыки)** — агенты и утилиты в формате SKILL.md: marketer, designer, youtube-to-transcript, add-knowledge
-- **Базы знаний** — структурированные файлы в `knowledge/` внутри каждого skill
-- **Транскрипции** — скрипт для загрузки субтитров с YouTube в `transcripts/` с последующей обработкой в знания
+| Расположение | Назначение |
+|--------------|------------|
+| **`skills/`** | Навыки для установки в другие проекты (sharing). Можно ставить через `npx skills add` и использовать в любом репозитории. |
+| **`.agents/skills/`** | Навыки для работы только внутри этого репозитория: транскрипции YouTube, добавление знаний в skill и т.п. |
+
+## Назначение проекта
+
+- **Shareable skills** (`skills/`) — marketer, designer и др.: агенты с базами знаний, которые можно устанавливать куда угодно
+- **Локальные навыки** (`.agents/skills/`) — youtube-to-transcript, add-knowledge: утилиты для ведения этого репозитория
+- **Транскрипции** — скрипт загрузки субтитров с YouTube в `transcripts/` с последующей обработкой в знания
 - **Команды Cursor** — process-to-knowledge (текст → знания), smart-commit (сообщения коммитов)
+
+## Установка навыков (skills/) в другой проект
+
+Навыки из `skills/` можно установить в любой проект через CLI:
+
+```bash
+npx skills add https://github.com/tikhomirovv/agents-knowledge/skills --skill <skill-name>
+```
+
+Примеры: `--skill marketer`, `--skill designer`. После установки подключайте нужный skill в Cursor/агента по инструкциям CLI.
 
 ## Как использовать
 
-### Работа с навыками (skills)
+### Shareable-навыки (marketer, designer)
 
-1. **Выбор навыка**: marketer или designer — в `skills/`; add-knowledge и youtube-to-transcript — в `.agents/skills/`
-2. **Контекст для LLM**: добавьте в контекст `SKILL.md` нужного навыка (и при необходимости файлы из `knowledge/`)
-3. **Цепочка**: YouTube → транскрипт (youtube-to-transcript) → файл в `transcripts/` → add-knowledge → новый файл в `knowledge/` нужного skill
+1. Установите нужный skill в проект (см. выше) или добавьте в контекст LLM `SKILL.md` и при необходимости файлы из `knowledge/`
+2. Агент использует роль и базу знаний из skill
+
+### Навыки только для этого репозитория (`.agents/skills/`)
+
+- **youtube-to-transcript** — получить транскрипцию с YouTube в `transcripts/`
+- **add-knowledge** — добавить новый файл в `knowledge/` выбранного skill и обновить индекс в SKILL.md  
+Цепочка: YouTube → транскрипт → add-knowledge → новый файл знаний в `skills/<name>/knowledge/`
 
 ### Транскрипции с YouTube
 
@@ -31,21 +53,22 @@ bun run fetch-transcript "https://www.youtube.com/watch?v=VIDEO_ID" --lang ru --
 
 ## Доступные навыки
 
-### Marketer (`skills/marketer/`)
-- **Специализация**: маркетинг, нейромаркетинг, контент, аналитика, брендинг
-- **Когда использовать**: стратегии, кампании, контент, анализ конкурентов, нейрокопирайтинг
-- **Знания**: в `knowledge/` (внимание, эмоции, восприятие, копирайтинг и др.)
+### Устанавливаемые (sharing) — `skills/`
 
-### Designer (`skills/designer/`)
-- **Специализация**: UI/UX, интерфейсы, дизайн-системы
-- **Когда использовать**: интерфейсы, прототипы, типографика, цвет, доступность
-- **Знания**: в `knowledge/` (в т.ч. refactoring_ui)
+**Marketer** (`skills/marketer/`)
+- Маркетинг, нейромаркетинг, контент, аналитика, брендинг. Для стратегий, кампаний, анализа конкурентов, нейрокопирайтинга. Знания в `knowledge/`.
 
-### YouTube to Transcript (`.agents/skills/youtube-to-transcript/`)
-- Получение транскрипции с YouTube и сохранение в `transcripts/`. Использует скрипт в `scripts/fetch-transcript/`. Требуется bun и `youtube-transcript-plus`.
+**Designer** (`skills/designer/`)
+- UI/UX, интерфейсы, дизайн-системы. Для интерфейсов, прототипов, типографики, цвета, доступности. Знания в `knowledge/` (в т.ч. refactoring_ui).
 
-### Add Knowledge (`.agents/skills/add-knowledge/`)
-- Добавление нового файла в `knowledge/` выбранного skill и обновление индекса в его SKILL.md. Удобно после получения транскрипта или обработки книги/текста.
+Установка в другой проект:  
+`npx skills add https://github.com/tikhomirovv/agents-knowledge/skills --skill marketer` (или `designer`).
+
+### Только для этого репозитория — `.agents/skills/`
+
+**YouTube to Transcript** — получение транскрипции с YouTube в `transcripts/`. Скрипт `scripts/fetch-transcript/`. Требуется bun и `youtube-transcript-plus`.
+
+**Add Knowledge** — добавление файла в `knowledge/` выбранного skill и обновление индекса в SKILL.md. После транскрипта или обработки книги/текста.
 
 ## Структура проекта
 
@@ -53,14 +76,14 @@ bun run fetch-transcript "https://www.youtube.com/watch?v=VIDEO_ID" --lang ru --
 ├── README.md
 ├── package.json                 # bun, скрипт fetch-transcript
 ├── Makefile                     # install, fetch-transcript (URL=... LANG=... OUTPUT=...)
-├── skills/                      # Навыки-агенты с базами знаний
+├── skills/                      # Навыки для установки в другие проекты (sharing)
 │   ├── marketer/
 │   │   ├── SKILL.md
 │   │   └── knowledge/
 │   └── designer/
 │       ├── SKILL.md
 │       └── knowledge/
-├── .agents/skills/              # Утилитарные навыки
+├── .agents/skills/              # Навыки только для работы внутри этого репозитория
 │   ├── add-knowledge/          # Добавление знаний в skill
 │   └── youtube-to-transcript/  # Транскрипции YouTube
 ├── scripts/
@@ -76,11 +99,11 @@ bun run fetch-transcript "https://www.youtube.com/watch?v=VIDEO_ID" --lang ru --
 └── TODO.md
 ```
 
-## Добавление нового навыка-агента
+## Добавление нового shareable-навыка
 
 1. Создайте папку в `skills/[agent_name]/` с `SKILL.md` и при необходимости `knowledge/`
-2. Добавьте описание в раздел «Доступные навыки» этого README
-3. При добавлении знаний используйте skill add-knowledge или команду process-to-knowledge
+2. Добавьте описание в раздел «Доступные навыки» (под «Устанавливаемые (sharing)»)
+3. Для пополнения знаний используйте skill add-knowledge или команду process-to-knowledge
 
 ## Обновлено
 
