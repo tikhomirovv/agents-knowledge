@@ -1,90 +1,87 @@
 # AI Agents Management System
 
-Система для управления и хранения конфигураций ИИ-агентов с их ролями и базами знаний.
+Система для управления конфигурациями ИИ-агентов: роли, базы знаний и навыки (skills) в формате, совместимом с Cursor.
 
 ## Назначение
 
-Этот проект предназначен для:
-- Хранения описаний ролей различных ИИ-агентов
-- Накопления и организации баз знаний для каждого агента
-- Стандартизации работы с агентами через единые форматы
-- Удобного управления коллекцией агентов
-- Получения транскрипций с YouTube видео для последующей обработки в базу знаний
+- **Skills (навыки)** — агенты и утилиты в формате SKILL.md: marketer, designer, youtube-to-transcript, add-knowledge
+- **Базы знаний** — структурированные файлы в `knowledge/` внутри каждого skill
+- **Транскрипции** — скрипт для загрузки субтитров с YouTube в `transcripts/` с последующей обработкой в знания
+- **Команды Cursor** — process-to-knowledge (текст → знания), smart-commit (сообщения коммитов)
 
 ## Как использовать
 
-1. **Выбор агента**: Найдите нужного агента в списке ниже
-2. **Загрузка контекста**: Добавьте файл `role.md` агента в контекст LLM
-3. **Работа с агентом**: Агент будет использовать свою роль и базу знаний для выполнения задач
+### Работа с навыками (skills)
 
-## Доступные агенты
+1. **Выбор навыка**: marketer или designer — в `skills/`; add-knowledge и youtube-to-transcript — в `.agents/skills/`
+2. **Контекст для LLM**: добавьте в контекст `SKILL.md` нужного навыка (и при необходимости файлы из `knowledge/`)
+3. **Цепочка**: YouTube → транскрипт (youtube-to-transcript) → файл в `transcripts/` → add-knowledge → новый файл в `knowledge/` нужного skill
 
-### Marketer
-- **Специализация**: Маркетинговые стратегии, анализ рынка и создание контента
-- **Когда использовать**: При планировании маркетинговых кампаний, создании контента, анализе конкурентов, разработке стратегий продвижения
-- **Основные навыки**: Разработка маркетинговых стратегий, анализ данных, создание контента, SMM, брендинг, планирование рекламных кампаний
+### Транскрипции с YouTube
 
-### Designer
-- **Специализация**: UI/UX дизайн и создание пользовательских интерфейсов
-- **Когда использовать**: При создании интерфейсов, улучшении дизайна, анализе UX, разработке дизайн-систем, консультировании по визуальному дизайну
-- **Основные навыки**: UI/UX дизайн, визуальная иерархия, типографика, цветовая теория, дизайн-системы, прототипирование
+Требуется **bun**. Установка: `bun install`. Скрипт: `scripts/fetch-transcript/fetch-transcript.ts`.
 
-<!--
-При добавлении нового агента:
-1. Создайте папку агента в директории agents/
-2. Добавьте описание агента в этот раздел
-3. Обновите дату последнего изменения
--->
+```powershell
+# Из корня проекта
+bun run fetch-transcript "https://www.youtube.com/watch?v=VIDEO_ID"
+bun run fetch-transcript "https://www.youtube.com/watch?v=VIDEO_ID" --lang ru --output my-video
+```
+
+Подробнее: [scripts/fetch-transcript/README.md](scripts/fetch-transcript/README.md).
+
+## Доступные навыки
+
+### Marketer (`skills/marketer/`)
+- **Специализация**: маркетинг, нейромаркетинг, контент, аналитика, брендинг
+- **Когда использовать**: стратегии, кампании, контент, анализ конкурентов, нейрокопирайтинг
+- **Знания**: в `knowledge/` (внимание, эмоции, восприятие, копирайтинг и др.)
+
+### Designer (`skills/designer/`)
+- **Специализация**: UI/UX, интерфейсы, дизайн-системы
+- **Когда использовать**: интерфейсы, прототипы, типографика, цвет, доступность
+- **Знания**: в `knowledge/` (в т.ч. refactoring_ui)
+
+### YouTube to Transcript (`.agents/skills/youtube-to-transcript/`)
+- Получение транскрипции с YouTube и сохранение в `transcripts/`. Использует скрипт в `scripts/fetch-transcript/`. Требуется bun и `youtube-transcript-plus`.
+
+### Add Knowledge (`.agents/skills/add-knowledge/`)
+- Добавление нового файла в `knowledge/` выбранного skill и обновление индекса в его SKILL.md. Удобно после получения транскрипта или обработки книги/текста.
 
 ## Структура проекта
 
 ```
-agents/
-├── README.md                    # Этот файл - описание проекта
-├── agents/                      # Папка с агентами
-│   └── [agent_name]/           # Папка конкретного агента
-│       ├── role.md             # Роль + инструкции + индекс знаний
-│       └── knowledge/          # База знаний агента
-│           └── [knowledge_files].md
-├── management/                 # Управление проектом
-│   ├── instructions/           # Инструкции для LLM
-│   │   ├── create_agent.md     # Создание нового агента
-│   │   └── add_knowledge.md    # Добавление знаний к агенту
-│   └── templates/              # Шаблоны для создания агентов
-│       ├── role.md
-│       └── knowledge.md
-├── scripts/                    # Скрипты для работы с проектом
-│   ├── fetch-transcript.ts     # Получение транскрипций с YouTube
-│   └── README.md               # Инструкции по использованию скриптов
-├── transcripts/                # Папка для сохранения транскрипций
-├── .anthropics-skills/         # Git submodule: официальные примеры навыков
-│   ├── skills/                 # Примеры навыков от Anthropic
-│   ├── spec/                   # Спецификация Agent Skills
-│   └── template/               # Шаблон для создания навыка
-└── .cursor/                    # Конфигурация для Cursor IDE
-    ├── commands/               # Команды для Cursor AI
-    │   ├── process-to-knowledge.md  # Обработка текста в знания
-    │   └── smart-commit.md     # Генерация сообщений коммитов
-    └── skills/                 # Символические ссылки на навыки
-        └── skill-creator/       # Ссылка на skill-creator из submodule
+├── README.md
+├── package.json                 # bun, скрипт fetch-transcript
+├── Makefile                     # install, fetch-transcript (URL=... LANG=... OUTPUT=...)
+├── skills/                      # Навыки-агенты с базами знаний
+│   ├── marketer/
+│   │   ├── SKILL.md
+│   │   └── knowledge/
+│   └── designer/
+│       ├── SKILL.md
+│       └── knowledge/
+├── .agents/skills/              # Утилитарные навыки
+│   ├── add-knowledge/          # Добавление знаний в skill
+│   └── youtube-to-transcript/  # Транскрипции YouTube
+├── scripts/
+│   └── fetch-transcript/       # Скрипт и README для транскрипций
+├── transcripts/                # Сохранённые транскрипции (.txt)
+├── management/
+│   └── instructions/           # Инструкции для LLM
+│       └── process_book_to_knowledge.md
+├── .cursor/
+│   └── commands/
+│       ├── process-to-knowledge.md  # Текст → знания агента
+│       └── smart-commit.md         # Генерация сообщений коммитов
+└── TODO.md
 ```
 
-## Git Submodule
+## Добавление нового навыка-агента
 
-Проект использует git submodule для доступа к официальным примерам навыков от Anthropic:
-
-- **Репозиторий**: [anthropics/skills](https://github.com/anthropics/skills)
-- **Путь**: `.anthropics-skills/`
-- **Обновление**: `git submodule update --remote`
-
-## Символические ссылки
-
-Для создания символической ссылки на навык из submodule (например, для использования в Cursor):
-
-```powershell
-New-Item -ItemType SymbolicLink -Path ".cursor\skills\skill-creator" -Target ".anthropics-skills\skills\skill-creator"
-```
+1. Создайте папку в `skills/[agent_name]/` с `SKILL.md` и при необходимости `knowledge/`
+2. Добавьте описание в раздел «Доступные навыки» этого README
+3. При добавлении знаний используйте skill add-knowledge или команду process-to-knowledge
 
 ## Обновлено
 
-*Последнее обновление: 15 января 2026*
+*Последнее обновление: 10 марта 2026*
