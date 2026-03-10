@@ -4,7 +4,7 @@
   "description": "AI Agents Management",
   "type": "module",
   "scripts": {
-    "fetch-transcript": "bun run scripts/fetch-transcript.ts"
+    "fetch-transcript": "bun run scripts/fetch-transcript/fetch-transcript.ts"
   },
   "dependencies": {
     "youtube-transcript-plus": "^1.1.2"

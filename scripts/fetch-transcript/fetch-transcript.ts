@@ -8,13 +8,13 @@
  *   bun run fetch-transcript <youtube-url-or-id> --lang en
  *   bun run fetch-transcript <youtube-url-or-id> --output custom-name
  *
- * The transcript will be saved to transcripts/ directory as a TXT file
+ * The transcript will be saved to transcripts/ directory (at project root) as a TXT file
  * (JSON saving is currently disabled but code is commented out)
  */
 
 import { fetchTranscript } from 'youtube-transcript-plus';
 import { writeFile, mkdir } from 'fs/promises';
-import { join, dirname } from 'path';
+import { join } from 'path';
 import { existsSync } from 'fs';
 
 // Get command line arguments
@@ -75,16 +75,8 @@ function extractVideoId(input: string): string {
 
 const videoId = extractVideoId(videoIdOrUrl);
 
-// Determine output filename
-// JSON saving is disabled, only TXT is saved
-// const outputFileName = outputName
-//   ? `${outputName}.json`
-//   : `${videoId}.json`;
-
-// Path to transcripts directory (from project root)
-// Script runs from project root, so transcripts/ is at the same level
-const transcriptsDir = join(import.meta.dir, '..', 'transcripts');
-// const outputPath = join(transcriptsDir, outputFileName);
+// Path to transcripts directory at project root (script lives in scripts/fetch-transcript/)
+const transcriptsDir = join(import.meta.dir, '..', '..', 'transcripts');
 
 // Determine TXT filename
 const textFileName = outputName
@@ -110,27 +102,12 @@ async function main() {
       console.log(`✓ Created transcripts directory: ${transcriptsDir}`);
     }
 
-    // Prepare data to save (commented out - JSON saving is disabled)
-    // const dataToSave = {
-    //   videoId: videoId,
-    //   videoUrl: videoIdOrUrl,
-    //   lang: lang,
-    //   fetchedAt: new Date().toISOString(),
-    //   segments: transcript,
-    //   // Also create a plain text version for easy reading
-    //   text: transcript.map(segment => segment.text).join(' '),
-    // };
-
-    // Save as JSON (commented out)
-    // await writeFile(outputPath, JSON.stringify(dataToSave, null, 2), 'utf-8');
-    // console.log(`✓ Transcript saved to: ${outputPath}`);
-
     // Save as plain text
     const text = transcript.map(segment => segment.text).join(' ');
     await writeFile(textPath, text, 'utf-8');
     console.log(`✓ Plain text version saved to: ${textPath}`);
 
-    console.log('\n✓ Done! You can now process this transcript using the LLM instruction.');
+    console.log('\n✓ Done! You can now process this transcript using the Add Knowledge skill.');
 
   } catch (error: any) {
     console.error('\n✗ Error fetching transcript:');
