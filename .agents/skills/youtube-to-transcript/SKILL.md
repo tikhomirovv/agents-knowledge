@@ -1,8 +1,10 @@
 ---
 name: youtube-to-transcript
-description: Fetches a YouTube video transcript and returns the text to the user by default. Present the answer like a simple UI — short and substantive; avoid flags, paths, and stack talk unless something breaks or the user asks. Use when the user provides a YouTube link or video ID and wants the transcript; optional save-to-file or Add Knowledge. Triggers on "get transcript", "download transcript", "YouTube transcript", or a YouTube URL plus transcript intent.
+description: >-
+  Fetches a YouTube video transcript and returns the text to the user by default. Present the answer like a simple UI — short and substantive; avoid flags, paths, and stack talk unless something breaks or the user asks. Use when the user provides a YouTube link or video ID and wants the transcript; optional save-to-file or Add Knowledge. Triggers on "get transcript", "download transcript", "YouTube transcript", or a YouTube URL plus transcript intent.
 license: MIT
-compatibility: Bun or Node/npm. Bundled `scripts/fetch-transcript.ts`. Needs `youtube-transcript-plus`. Runtime: user hint (bun/npm) else auto-detect; if neither Bun nor Node+npm, ask what to install.
+compatibility: >-
+  Bun or Node/npm. Bundled `scripts/fetch-transcript.ts`. Needs `youtube-transcript-plus`. Runtime: user hint (bun/npm) else auto-detect; if neither Bun nor Node+npm, ask what to install.
 ---
 
 # YouTube to Transcript
@@ -37,14 +39,19 @@ Both present, no hint → prefer **Bun**.
 
 ### 4. Dependency
 
-Run the import check from a directory where `youtube-transcript-plus` is installed (e.g. project with `package.json` that lists it — not tied to the skill’s folder).
+Run the import check from the **cwd** you use for the script (often repo root).
 
-| Runtime | Check |
+| Runtime | Check (exit 0 = OK) |
 |--------|--------|
 | Bun | `bun -e "import('youtube-transcript-plus').then(()=>process.exit(0)).catch(()=>process.exit(1))"` |
 | npm | `node --input-type=module -e "import('youtube-transcript-plus').then(()=>process.exit(0)).catch(()=>process.exit(1))"` |
 
-Missing → `bun add youtube-transcript-plus` or `npm install youtube-transcript-plus` (match runtime). Stop.
+**If missing — prefer global install** (do not add the package to the project unless global still fails or the user wants it local):
+
+- **npm:** `npm install -g youtube-transcript-plus` — then re-check with **`NODE_PATH`** so `node` sees globals: PowerShell `$env:NODE_PATH = (npm root -g)` then the same `node -e` line; bash `NODE_PATH="$(npm root -g)" node --input-type=module -e "..."`.
+- **bun:** `bun install -g youtube-transcript-plus` — then run the same `bun -e` check again.
+
+**Last resort:** `bun add youtube-transcript-plus` / `npm install youtube-transcript-plus` in the project. Stop until a check passes.
 
 ### 5. Run script
 

@@ -6,11 +6,17 @@
 
 ## Dependency
 
+If the import check fails in the project, **install globally** first:
+
 ```bash
-bun add youtube-transcript-plus
+npm install -g youtube-transcript-plus
 # or
-npm install youtube-transcript-plus
+bun install -g youtube-transcript-plus
 ```
+
+For **node** after a global npm install, the same shell may need `NODE_PATH` (e.g. `NODE_PATH="$(npm root -g)"` on bash, or PowerShell `$env:NODE_PATH = (npm root -g)`) so `import('youtube-transcript-plus')` resolves.
+
+**Last resort:** install into the project (`npm install` / `bun add`).
 
 ## Commands
 

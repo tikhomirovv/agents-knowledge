@@ -4,10 +4,21 @@
 
 ## Установка
 
+Зависимость `youtube-transcript-plus`: если её **нет в проекте**, ставьте **глобально** (не обязательно добавлять в `package.json`):
+
 ```powershell
-# Из корня проекта
-bun install
+npm install -g youtube-transcript-plus
+# или
+bun install -g youtube-transcript-plus
 ```
+
+Для **Node** при глобальной установке иногда нужен `NODE_PATH` на каталог глобальных модулей, иначе `import` из скрипта не найдёт пакет:
+
+```powershell
+$env:NODE_PATH = (npm root -g)
+```
+
+Иначе — `bun install` в корне репозитория (локально в проект).
 
 ## Использование
 

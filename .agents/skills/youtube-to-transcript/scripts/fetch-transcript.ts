@@ -11,7 +11,7 @@
  *   bun run fetch-transcript.ts <url> --file /path/to/out.txt [--lang xx]
  *   npx --yes tsx fetch-transcript.ts <url> [--file path]
  *
- * Requires: youtube-transcript-plus (bun add or npm install); npm path uses tsx for .ts
+ * Requires: youtube-transcript-plus (prefer global: npm install -g / bun install -g; set NODE_PATH for node/tsx if import fails; local install last resort); npm path uses tsx for .ts
  */
 
 import { fetchTranscript } from 'youtube-transcript-plus';

@@ -9,6 +9,8 @@
  * Usage:
  *   bun run fetch-transcript <youtube-url-or-id> [--lang xx]
  *   bun run fetch-transcript <url> --file <path> [--lang xx]
+ *
+ * Requires youtube-transcript-plus (prefer global install if not in project; NODE_PATH for node when needed).
  */
 
 import { fetchTranscript } from 'youtube-transcript-plus';
