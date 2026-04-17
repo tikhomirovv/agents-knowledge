@@ -6,7 +6,8 @@
 # Переменные по умолчанию для fetch-transcript
 URL ?=
 LANG ?= en
-OUTPUT ?=
+# Optional: FILE=path/to/file.txt — сохранить; иначе только stdout
+FILE ?=
 
 # Цель по умолчанию — показать справку
 help:
@@ -15,11 +16,11 @@ help:
 	@echo "  make install              — установить зависимости (bun install)"
 	@echo "  make submodule-init       — инициализировать git submodule (.anthropics-skills)"
 	@echo "  make submodule-update     — обновить submodule до последней версии"
-	@echo "  make fetch-transcript     — скачать транскрипцию YouTube (URL=... [LANG=ru] [OUTPUT=имя])"
+	@echo "  make fetch-transcript     — транскрипт YouTube (URL=... [LANG=ru] [FILE=путь/к/файлу.txt])"
 	@echo ""
 	@echo "Примеры:"
 	@echo "  make fetch-transcript URL=https://www.youtube.com/watch?v=VIDEO_ID"
-	@echo "  make fetch-transcript URL=https://youtube.com/watch?v=VIDEO_ID LANG=ru OUTPUT=my-video"
+	@echo "  make fetch-transcript URL=https://youtube.com/watch?v=VIDEO_ID LANG=ru FILE=transcripts/my.txt"
 
 # Установка зависимостей
 install:
@@ -34,9 +35,9 @@ submodule-update:
 	git submodule update --remote
 
 # Получение транскрипции с YouTube
-# Использование: make fetch-transcript URL=<youtube-url> [LANG=ru] [OUTPUT=имя-файла]
+# Использование: make fetch-transcript URL=<youtube-url> [LANG=ru] [FILE=путь/к/файлу.txt]
 fetch-transcript:
 ifndef URL
 	$(error Укажите URL: make fetch-transcript URL=https://www.youtube.com/watch?v=VIDEO_ID)
 endif
-	bun run fetch-transcript "$(URL)" --lang "$(LANG)" $(if $(OUTPUT),--output "$(OUTPUT)",)
+	bun run fetch-transcript "$(URL)" --lang "$(LANG)" $(if $(FILE),--file "$(FILE)",)

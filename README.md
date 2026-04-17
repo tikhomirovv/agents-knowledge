@@ -13,7 +13,7 @@
 
 - **Shareable skills** (`skills/`) — marketer, designer и др.: агенты с базами знаний, которые можно устанавливать куда угодно
 - **Локальные навыки** (`.agents/skills/`) — youtube-to-transcript, add-knowledge: утилиты для ведения этого репозитория
-- **Транскрипции** — скрипт загрузки субтитров с YouTube в `transcripts/` с последующей обработкой в знания
+- **Транскрипции** — скрипт субтитров с YouTube (по умолчанию вывод в консоль; сохранение в файл — по флагу `--file`) и при желании обработка в знания
 - **Команды Cursor** — process-to-knowledge (текст → знания), smart-commit (сообщения коммитов)
 
 ## Установка навыков (skills/) в другой проект
@@ -35,18 +35,20 @@ npx skills add https://github.com/tikhomirovv/agents-knowledge/skills --skill <s
 
 ### Навыки только для этого репозитория (`.agents/skills/`)
 
-- **youtube-to-transcript** — получить транскрипцию с YouTube в `transcripts/`
+- **youtube-to-transcript** — транскрипт с YouTube в ответ пользователю; файл — только по запросу (`--file`)
 - **add-knowledge** — добавить новый файл в `knowledge/` выбранного skill и обновить индекс в SKILL.md  
 Цепочка: YouTube → транскрипт → add-knowledge → новый файл знаний в `skills/<name>/knowledge/`
 
 ### Транскрипции с YouTube
 
-Требуется **bun**. Установка: `bun install`. Скрипт: `scripts/fetch-transcript/fetch-transcript.ts`.
+**Bun** (или Node + `npx tsx` для скилла). Установка: `bun install`. Скрипт: `scripts/fetch-transcript/fetch-transcript.ts`.
 
 ```powershell
-# Из корня проекта
+# Из корня проекта — текст в stdout
 bun run fetch-transcript "https://www.youtube.com/watch?v=VIDEO_ID"
-bun run fetch-transcript "https://www.youtube.com/watch?v=VIDEO_ID" --lang ru --output my-video
+bun run fetch-transcript "https://www.youtube.com/watch?v=VIDEO_ID" --lang ru
+# Сохранить в файл (путь любой)
+bun run fetch-transcript "https://www.youtube.com/watch?v=VIDEO_ID" --file "transcripts/my-video.txt"
 ```
 
 Подробнее: [scripts/fetch-transcript/README.md](scripts/fetch-transcript/README.md).
@@ -66,7 +68,7 @@ bun run fetch-transcript "https://www.youtube.com/watch?v=VIDEO_ID" --lang ru --
 
 ### Только для этого репозитория — `.agents/skills/`
 
-**YouTube to Transcript** — получение транскрипции с YouTube в `transcripts/`. Скрипт `scripts/fetch-transcript/`. Требуется bun и `youtube-transcript-plus`.
+**YouTube to Transcript** — транскрипт в ответ; файл опционально. Скрипт `scripts/fetch-transcript/`. Зависимость: `youtube-transcript-plus` (рантайм: bun или npm по скиллу).
 
 **Add Knowledge** — добавление файла в `knowledge/` выбранного skill и обновление индекса в SKILL.md. После транскрипта или обработки книги/текста.
 
@@ -75,7 +77,7 @@ bun run fetch-transcript "https://www.youtube.com/watch?v=VIDEO_ID" --lang ru --
 ```
 ├── README.md
 ├── package.json                 # bun, скрипт fetch-transcript
-├── Makefile                     # install, fetch-transcript (URL=... LANG=... OUTPUT=...)
+├── Makefile                     # install, fetch-transcript (URL=... LANG=... FILE=...)
 ├── skills/                      # Навыки для установки в другие проекты (sharing)
 │   ├── marketer/
 │   │   ├── SKILL.md
@@ -88,7 +90,7 @@ bun run fetch-transcript "https://www.youtube.com/watch?v=VIDEO_ID" --lang ru --
 │   └── youtube-to-transcript/  # Транскрипции YouTube
 ├── scripts/
 │   └── fetch-transcript/       # Скрипт и README для транскрипций
-├── transcripts/                # Сохранённые транскрипции (.txt)
+├── transcripts/                # Опционально: сюда можно сохранять через --file
 ├── management/
 │   └── instructions/           # Инструкции для LLM
 │       └── process_book_to_knowledge.md

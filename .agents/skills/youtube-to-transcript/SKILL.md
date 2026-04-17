@@ -1,91 +1,77 @@
 ---
 name: youtube-to-transcript
-description: Fetches a YouTube video transcript and saves it as a text file in the project's transcripts/ folder. Use when the user provides a YouTube link or video ID and wants to get the transcript, save subtitles as text, or prepare video content for later use (e.g. adding to skill knowledge). Apply whenever the user says "get transcript", "download transcript", "YouTube transcript", or pastes a YouTube URL and wants the text.
+description: Fetches a YouTube video transcript and returns the text to the user by default. Present the answer like a simple UI — short and substantive; avoid flags, paths, and stack talk unless something breaks or the user asks. Use when the user provides a YouTube link or video ID and wants the transcript; optional save-to-file or Add Knowledge. Triggers on "get transcript", "download transcript", "YouTube transcript", or a YouTube URL plus transcript intent.
 license: MIT
-compatibility: Requires bun. Use the skill's bundled script (scripts/fetch-transcript.ts); run it from the directory where you want transcripts/ (e.g. project root). The script needs youtube-transcript-plus (bun add youtube-transcript-plus).
+compatibility: Bun or Node/npm. Bundled `scripts/fetch-transcript.ts`. Needs `youtube-transcript-plus`. Runtime: user hint (bun/npm) else auto-detect; if neither Bun nor Node+npm, ask what to install.
 ---
 
 # YouTube to Transcript
 
-This skill uses its **bundled script** to fetch a YouTube transcript and save it as a `.txt` file in `transcripts/`. The script lives inside the skill (`scripts/fetch-transcript.ts`), so the skill works when copied to another project. Run the script from the directory where you want `transcripts/` (e.g. project root). Optionally suggest using the **Add Knowledge** skill next to turn that transcript into skill knowledge.
+**Default:** show the transcript in your reply (run script **without** `--file`; **stdout** = plain text only — use it for the user). **Do not** assume a project folder or `transcripts/` unless the user asked.
 
-## What you need
+**Save to disk:** only if the user asked to save, download, or write a file — then run with `--file <path>` (any path they give or you agree on). If they want a file but not the path → **ask once** (path + format: usually `.txt`).
 
-- **YouTube URL or video ID** — from the user's message or ask for it.
-- **Output filename** — must be resolved before running the script (see step 2). Either the user gives a name, or the video title, or you ask and then derive a short semantic name.
-- **Language** (optional) — default is `en`. Use `--lang ru` (or other code) if the user wants another language.
+**Optional:** `--lang xx` (default `en`). **Add Knowledge** only if they want that next.
+
+**How you talk to the user** — see §6 (brief, non-technical by default).
 
 ## Workflow
 
-### 1. Get the URL
+### 1. URL / ID
 
-- If the user already sent a YouTube link or video ID, use it.
-- If not, ask: "Please send the YouTube video URL (or the video ID)."
+Missing → ask once.
 
-### 2. Resolve the output filename
+### 2. Output intent
 
-You must have a clear name for the transcript file before running the script. Do **not** run with only the video ID unless the user explicitly prefers that.
+- **Only text in chat** (default) — no `--file`.
+- **Save file** — need `--file <absolute-or-relative-path>`; resolve path with the user if unclear.
+- **Ambiguous** ("get transcript" only) — you may ask briefly: "Reply here only, or save to a file (which path)?"
 
-- **If the user gave an explicit filename** (e.g. "save as marketing-tips", "call it attention_traps") — use it, but **optimize**: short, lowercase, words with underscores or hyphens, no spaces or special characters. Example: "My Cool Video!!" → `my_cool_video`.
-- **If the user gave the video title** (e.g. "Ловушка для внимания Бен Парр") — derive a **short semantic filename** from it: meaningful words, lowercase, underscores or hyphens. Example: "Ловушка для внимания Бен Парр" → `attention_trap_ben_parr` or `lovushka_vnimaniya`.
-- **If the user gave nothing** — **ask**: "What should we name the transcript file? You can give a short name (e.g. for the topic) or the video title, and I'll use a suitable filename." Once they answer, apply the rules above (explicit filename → optimize; video title → derive short semantic name).
+### 3. Runtime (Bun vs npm)
 
-Use this name in `--output <name>` so the file is saved as `transcripts/<name>.txt`.
+1. User said bun / npm / node / npx → use that (must be on PATH).
+2. Else: `bun` → Bun; else `node`+`npm` → `npx --yes tsx`.
+3. Neither → ask to install **Bun** or **Node.js (npm)**. Stop.
 
-### 3. Check that the dependency is available
+Both present, no hint → prefer **Bun**.
 
-Before running the script, check that **youtube-transcript-plus** is available in the **directory from which the skill is run** (typically the project root). From that directory, run:
+### 4. Dependency
 
-```bash
-bun -e "import('youtube-transcript-plus').then(() => process.exit(0)).catch(() => process.exit(1))"
-```
+Run the import check from a directory where `youtube-transcript-plus` is installed (e.g. project with `package.json` that lists it — not tied to the skill’s folder).
 
-- **If the command exits with 0** — the dependency is present. Continue to step 4.
-- **If the command exits with 1 (or fails)** — the dependency is missing. **Do not run the script.** Tell the user:
+| Runtime | Check |
+|--------|--------|
+| Bun | `bun -e "import('youtube-transcript-plus').then(()=>process.exit(0)).catch(()=>process.exit(1))"` |
+| npm | `node --input-type=module -e "import('youtube-transcript-plus').then(()=>process.exit(0)).catch(()=>process.exit(1))"` |
 
-  **"To run this skill, the dependency `youtube-transcript-plus` is required. Install it in this project with:**
-  **`bun add youtube-transcript-plus`**
-  **(or `npm install youtube-transcript-plus`). Make sure it is installed, then run the skill again."**
+Missing → `bun add youtube-transcript-plus` or `npm install youtube-transcript-plus` (match runtime). Stop.
 
-  Then stop; do not run the transcript script until the user has installed the dependency and invoked the skill again.
+### 5. Run script
 
-### 4. Run the skill's bundled script
+`<path>` = this skill’s `scripts/fetch-transcript.ts`.
 
-Use the script **inside this skill**: `scripts/fetch-transcript.ts`. Run it from the **directory where you want `transcripts/`** (e.g. project root). The script writes to `transcripts/` in the current working directory. For detailed usage and examples, see [references/script-usage.md](references/script-usage.md).
+- **Chat only:** `bun run <path> "<url-or-id>" [--lang xx]` or `npx --yes tsx <path> "<url-or-id>" [--lang xx]`  
+  Read **stdout** for the transcript text; stderr has progress/errors.
 
-**If this skill is in `.agents/skills/youtube-to-transcript`** (or the same repo has a project script), you can use either:
+- **Save:** add `--file "<path>"` (same command).
 
-- **Bundled script** (works when the skill is copied elsewhere):
-  ```bash
-  bun run .agents/skills/youtube-to-transcript/scripts/fetch-transcript.ts "<url-or-video-id>" --output <resolved-filename>
-  ```
-- **Project script** (if this repo has `package.json` and `scripts/fetch-transcript/`):
-  ```bash
-  bun run fetch-transcript "<url-or-video-id>" --output <resolved-filename>
-  ```
+### 6. Reply (user-facing)
 
-With optional language (e.g. Russian), add `--lang ru`.
+**Tone:** like a **simple, pleasant UI** — short, plain language, only what matters. No lecture.
 
-Output file: `transcripts/<resolved-filename>.txt`.
-
-### 5. Confirm and suggest next step
-
-- Tell the user where the file was saved (e.g. `transcripts/abc123.txt`).
-- Suggest: **"If you want to add this transcript as knowledge to a skill (e.g. marketer or designer), use the Add Knowledge skill and point it to this file and the target skill."** So the user can either invoke Add Knowledge themselves or you can handle it in a follow-up.
+- **Deliver first:** summary or full transcript (whatever fits the request and length). That is the main “content.”
+- **Do not** surface implementation by default: no flags (`--file`, `--lang`), paths to the skill script, bun vs npm, stdout/stderr, or “how I ran it” unless the user asked or something failed.
+- **Technical detail** only when **needed**: missing dependency, runtime not found, error from the fetcher, or the user explicitly wants commands / save path / language switch.
+- **Quirks:** YouTube may return HTML entities in text (e.g. `&amp;#39;` for apostrophe) — normalize to readable characters in what you show the user; mention the source only if they ask.
+- **Saved file:** one short line where it went (human path). **Add Knowledge** only if they want that next.
 
 ## Edge cases
 
-- **No URL given** — Ask once for the YouTube link or video ID; do not run without it.
-- **No filename or title given** — Ask the user what to name the file (short name or video title); then derive or optimize the filename. Do not run with only the video ID unless the user explicitly says they want that.
-- **Script fails** (e.g. video unavailable, no transcript) — Report the script’s error to the user and suggest checking the URL or trying another video.
-- **Dependency missing** — After the check in step 3, if the dependency is not available, inform the user and give the install command; do not run the script. Ask them to install and run the skill again.
-- **Wrong project / no script** — Use this skill's bundled script at `scripts/fetch-transcript.ts` from the directory where you want `transcripts/`. Ensure youtube-transcript-plus is installed there.
+- **Explicit runtime missing** — report; offer the other stack if available.
+- **No URL** — do not run.
+- **Fetch errors** — relay; suggest another language/video.
+- **Relative `--file`** — resolved vs **current working directory** of the command; use absolute path if the user needs a specific location.
 
 ## Summary
 
-1. Get YouTube URL (or ask).
-2. Resolve output filename: if user gave a name → optimize it; if user gave video title → derive a short semantic filename; if neither → ask the user, then derive or optimize.
-3. Check dependency in the run directory; if missing, tell the user to run `bun add youtube-transcript-plus` and run the skill again, then stop.
-4. Run the skill's script from the target directory: `bun run <skill-path>/scripts/fetch-transcript.ts "<url>" --output <filename>` (add `--lang` if needed).
-5. Confirm the path to the created `.txt` in `transcripts/`.
-6. Optionally suggest using the **Add Knowledge** skill to turn that file into skill knowledge.
+URL → output intent (default chat / file / ask) → runtime → dep check → run (no `--file` or with `--file`) → answer user.

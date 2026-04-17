@@ -1,34 +1,31 @@
 # Bundled script: fetch-transcript
 
-This script is part of the **youtube-to-transcript** skill. It fetches a YouTube video transcript and saves it as a `.txt` file in `transcripts/` in the **current working directory**. Run it from your project root so that `transcripts/` is created there.
+**Default:** transcript text on **stdout** only (no file). Progress on **stderr**.
+
+**Optional:** `--file <path>` writes UTF-8 text to that path (creates parent dirs). Not tied to any project folder unless the path says so.
 
 ## Dependency
 
-Install in the project where you run the script:
-
 ```bash
 bun add youtube-transcript-plus
-# or: npm install youtube-transcript-plus
+# or
+npm install youtube-transcript-plus
 ```
 
-## Usage
+## Commands
 
-From the **directory where you want `transcripts/`** (e.g. project root):
+`<path>` = this skill’s `scripts/fetch-transcript.ts`.
+
+**Stdout only (typical — agent pastes for user)**
 
 ```bash
-bun run <path-to-this-skill>/scripts/fetch-transcript.ts "<youtube-url>" --output <filename>
+bun run <path> "<youtube-url-or-id>" [--lang ru]
+npx --yes tsx <path> "<youtube-url-or-id>" [--lang ru]
 ```
 
-With language:
+**Save to disk**
 
 ```bash
-bun run <path-to-this-skill>/scripts/fetch-transcript.ts "<url>" --output <filename> --lang ru
+bun run <path> "<url-or-id>" --file "D:/notes/video.txt" [--lang ru]
+npx --yes tsx <path> "<url-or-id>" --file ./out.txt
 ```
-
-Example (skill in `.agents/skills/youtube-to-transcript`):
-
-```bash
-bun run .agents/skills/youtube-to-transcript/scripts/fetch-transcript.ts "https://youtube.com/watch?v=VIDEO_ID" --output my-video --lang ru
-```
-
-Output: `transcripts/<filename>.txt`.

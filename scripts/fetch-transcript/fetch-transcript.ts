@@ -1,117 +1,83 @@
 #!/usr/bin/env bun
 
 /**
- * Script for fetching YouTube video transcripts
+ * YouTube transcript fetcher (repo script; same behavior as youtube-to-transcript skill).
+ *
+ * Default: plain transcript text to stdout only. Logs to stderr.
+ * Optional: --file <path> to save UTF-8 file (creates parent directories).
  *
  * Usage:
- *   bun run fetch-transcript <youtube-url-or-id>
- *   bun run fetch-transcript <youtube-url-or-id> --lang en
- *   bun run fetch-transcript <youtube-url-or-id> --output custom-name
- *
- * The transcript will be saved to transcripts/ directory (at project root) as a TXT file
- * (JSON saving is currently disabled but code is commented out)
+ *   bun run fetch-transcript <youtube-url-or-id> [--lang xx]
+ *   bun run fetch-transcript <url> --file <path> [--lang xx]
  */
 
 import { fetchTranscript } from 'youtube-transcript-plus';
 import { writeFile, mkdir } from 'fs/promises';
-import { join } from 'path';
+import { dirname } from 'path';
 import { existsSync } from 'fs';
 
-// Get command line arguments
 const args = process.argv.slice(2);
 
-// Parse arguments
 let videoIdOrUrl: string | null = null;
 let lang: string = 'en';
-let outputName: string | null = null;
+let filePath: string | null = null;
 
 for (let i = 0; i < args.length; i++) {
   const arg = args[i];
-
   if (arg === '--lang' && i + 1 < args.length) {
     lang = args[i + 1];
     i++;
-  } else if (arg === '--output' && i + 1 < args.length) {
-    outputName = args[i + 1];
+  } else if (arg === '--file' && i + 1 < args.length) {
+    filePath = args[i + 1];
     i++;
   } else if (!arg.startsWith('--')) {
     videoIdOrUrl = arg;
   }
 }
 
-// Validate input
 if (!videoIdOrUrl) {
   console.error('Error: YouTube URL or video ID is required');
-  console.log('\nUsage:');
-  console.log('  bun run fetch-transcript <youtube-url-or-id>');
-  console.log('  bun run fetch-transcript <youtube-url-or-id> --lang en');
-  console.log('  bun run fetch-transcript <youtube-url-or-id> --output custom-name');
+  console.error('\nUsage:');
+  console.error('  bun run fetch-transcript <youtube-url-or-id> [--lang xx]');
+  console.error('  bun run fetch-transcript <url> --file <path-to-save.txt> [--lang xx]');
+  console.error('\nDefault: transcript text to stdout. Use --file to save to disk.');
   process.exit(1);
 }
 
-// Extract video ID from URL if needed
 function extractVideoId(input: string): string {
-  // If it's already just an ID (11 characters, alphanumeric)
-  if (/^[a-zA-Z0-9_-]{11}$/.test(input)) {
-    return input;
-  }
-
-  // Try to extract from various YouTube URL formats
+  if (/^[a-zA-Z0-9_-]{11}$/.test(input)) return input;
   const patterns = [
     /(?:youtube\.com\/watch\?v=|youtu\.be\/|youtube\.com\/embed\/)([a-zA-Z0-9_-]{11})/,
     /youtube\.com\/watch\?.*v=([a-zA-Z0-9_-]{11})/,
   ];
-
   for (const pattern of patterns) {
     const match = input.match(pattern);
-    if (match && match[1]) {
-      return match[1];
-    }
+    if (match?.[1]) return match[1];
   }
-
-  // If no pattern matches, return as is (might be invalid, but let the library handle it)
   return input;
 }
 
 const videoId = extractVideoId(videoIdOrUrl);
 
-// Path to transcripts directory at project root (script lives in scripts/fetch-transcript/)
-const transcriptsDir = join(import.meta.dir, '..', '..', 'transcripts');
-
-// Determine TXT filename
-const textFileName = outputName
-  ? `${outputName}.txt`
-  : `${videoId}.txt`;
-const textPath = join(transcriptsDir, textFileName);
-
 async function main() {
   try {
-    console.log(`Fetching transcript for video: ${videoId}`);
-    console.log(`Language: ${lang}`);
+    console.error(`Fetching transcript for video: ${videoId} (lang: ${lang})`);
 
-    // Fetch transcript
-    const transcript = await fetchTranscript(videoId, {
-      lang: lang,
-    });
+    const transcript = await fetchTranscript(videoId, { lang });
+    const text = transcript.map((segment: { text: string }) => segment.text).join(' ');
 
-    console.log(`✓ Transcript fetched successfully (${transcript.length} segments)`);
-
-    // Create transcripts directory if it doesn't exist
-    if (!existsSync(transcriptsDir)) {
-      await mkdir(transcriptsDir, { recursive: true });
-      console.log(`✓ Created transcripts directory: ${transcriptsDir}`);
+    if (filePath) {
+      const dir = dirname(filePath);
+      if (dir && dir !== '.' && !existsSync(dir)) {
+        await mkdir(dir, { recursive: true });
+      }
+      await writeFile(filePath, text, 'utf-8');
+      console.error(`Saved: ${filePath}`);
+    } else {
+      process.stdout.write(`${text}\n`);
     }
-
-    // Save as plain text
-    const text = transcript.map(segment => segment.text).join(' ');
-    await writeFile(textPath, text, 'utf-8');
-    console.log(`✓ Plain text version saved to: ${textPath}`);
-
-    console.log('\n✓ Done! You can now process this transcript using the Add Knowledge skill.');
-
   } catch (error: any) {
     console.error('\n✗ Error fetching transcript:');
-
     if (error.name === 'YoutubeTranscriptVideoUnavailableError') {
       console.error('  Video is unavailable or has been removed');
     } else if (error.name === 'YoutubeTranscriptDisabledError') {
@@ -120,13 +86,11 @@ async function main() {
       console.error('  No transcript is available for this video');
     } else if (error.name === 'YoutubeTranscriptNotAvailableLanguageError') {
       console.error(`  Transcript is not available in language: ${lang}`);
-      console.error('  Try a different language with --lang flag');
     } else if (error.name === 'YoutubeTranscriptInvalidVideoIdError') {
       console.error('  Invalid video ID or URL');
     } else {
       console.error(`  ${error.message}`);
     }
-
     process.exit(1);
   }
 }

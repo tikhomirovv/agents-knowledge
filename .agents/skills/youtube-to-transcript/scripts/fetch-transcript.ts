@@ -2,33 +2,37 @@
 
 /**
  * YouTube transcript fetcher — bundled with the youtube-to-transcript skill.
- * Saves transcript to transcripts/ in the current working directory (run from project root).
+ *
+ * Default: prints plain transcript text to stdout only (no file). Logs go to stderr.
+ * Optional: --file <path> saves UTF-8 text to that path (any directory; parents created).
  *
  * Usage:
- *   bun run scripts/fetch-transcript.ts <youtube-url-or-id> --output <name>
- *   bun run scripts/fetch-transcript.ts <url> --output <name> --lang ru
+ *   bun run fetch-transcript.ts <youtube-url-or-id> [--lang xx]
+ *   bun run fetch-transcript.ts <url> --file /path/to/out.txt [--lang xx]
+ *   npx --yes tsx fetch-transcript.ts <url> [--file path]
  *
- * Requires: youtube-transcript-plus (bun add youtube-transcript-plus or npm install)
+ * Requires: youtube-transcript-plus (bun add or npm install); npm path uses tsx for .ts
  */
 
 import { fetchTranscript } from 'youtube-transcript-plus';
 import { writeFile, mkdir } from 'fs/promises';
-import { join } from 'path';
+import { dirname } from 'path';
 import { existsSync } from 'fs';
 
 const args = process.argv.slice(2);
 
 let videoIdOrUrl: string | null = null;
 let lang: string = 'en';
-let outputName: string | null = null;
+/** If set, write transcript here; otherwise stdout only */
+let filePath: string | null = null;
 
 for (let i = 0; i < args.length; i++) {
   const arg = args[i];
   if (arg === '--lang' && i + 1 < args.length) {
     lang = args[i + 1];
     i++;
-  } else if (arg === '--output' && i + 1 < args.length) {
-    outputName = args[i + 1];
+  } else if (arg === '--file' && i + 1 < args.length) {
+    filePath = args[i + 1];
     i++;
   } else if (!arg.startsWith('--')) {
     videoIdOrUrl = arg;
@@ -37,9 +41,11 @@ for (let i = 0; i < args.length; i++) {
 
 if (!videoIdOrUrl) {
   console.error('Error: YouTube URL or video ID is required');
-  console.log('\nUsage:');
-  console.log('  bun run scripts/fetch-transcript.ts <youtube-url-or-id> --output <filename>');
-  console.log('  bun run scripts/fetch-transcript.ts <url> --output <filename> --lang ru');
+  console.error('\nUsage:');
+  console.error('  bun run fetch-transcript.ts <youtube-url-or-id> [--lang xx]');
+  console.error('  bun run fetch-transcript.ts <url> --file <path-to-save.txt> [--lang xx]');
+  console.error('  (npm: npx --yes tsx fetch-transcript.ts …)');
+  console.error('\nDefault: transcript text to stdout. Use --file only when saving to disk.');
   process.exit(1);
 }
 
@@ -58,28 +64,23 @@ function extractVideoId(input: string): string {
 
 const videoId = extractVideoId(videoIdOrUrl);
 
-// Transcripts go to transcripts/ in the current working directory (run from project root)
-const transcriptsDir = join(process.cwd(), 'transcripts');
-const textFileName = outputName ? `${outputName}.txt` : `${videoId}.txt`;
-const textPath = join(transcriptsDir, textFileName);
-
 async function main() {
   try {
-    console.log(`Fetching transcript for video: ${videoId}`);
-    console.log(`Language: ${lang}`);
+    console.error(`Fetching transcript for video: ${videoId} (lang: ${lang})`);
 
     const transcript = await fetchTranscript(videoId, { lang });
-    console.log(`✓ Transcript fetched successfully (${transcript.length} segments)`);
-
-    if (!existsSync(transcriptsDir)) {
-      await mkdir(transcriptsDir, { recursive: true });
-      console.log(`✓ Created transcripts directory: ${transcriptsDir}`);
-    }
-
     const text = transcript.map((segment: { text: string }) => segment.text).join(' ');
-    await writeFile(textPath, text, 'utf-8');
-    console.log(`✓ Plain text saved to: ${textPath}`);
-    console.log('\n✓ Done! You can add this transcript to a skill using the Add Knowledge skill.');
+
+    if (filePath) {
+      const dir = dirname(filePath);
+      if (dir && dir !== '.' && !existsSync(dir)) {
+        await mkdir(dir, { recursive: true });
+      }
+      await writeFile(filePath, text, 'utf-8');
+      console.error(`Saved: ${filePath}`);
+    } else {
+      process.stdout.write(`${text}\n`);
+    }
   } catch (error: any) {
     console.error('\n✗ Error fetching transcript:');
     if (error.name === 'YoutubeTranscriptVideoUnavailableError') {
