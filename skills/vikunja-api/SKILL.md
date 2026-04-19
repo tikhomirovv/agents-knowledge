@@ -100,6 +100,25 @@ Content-Type: application/json
 
 **Safety:** avoid printing full tokens in transcripts; redact in logs/examples.
 
+### 4.1 Rich text: what format to send (`description`, `comment`, …)
+
+`docs.json` models these fields as plain **`string`** — it does **not** say “Markdown” or “HTML”. In practice the Vikunja **web UI** uses a **rich-text editor (Tiptap)** for long-form text, and values are stored and returned as **HTML fragments** (you will see tags like `<p>`, `<ul>`, `<li>`, `<strong>`, `<a href="…">` on tasks fetched via the API). Markdown-style typing or paste in the **browser** may be converted by the editor, but **do not rely on raw Markdown** in JSON API bodies for layout: bullets like `•`, lines starting with `-`, or `**bold**` will usually show as **plain text** unless you send HTML.
+
+**When creating or updating via the API** and the user expects lists, emphasis, or links, put **HTML** in the payload (keep tags minimal and well-formed; escape quotes inside JSON).
+
+| Model (OpenAPI) | Field | Typical use |
+|-----------------|-------|-------------|
+| `models.Task` | `description` | Task body text in the UI |
+| `models.TaskComment` | `comment` | Thread under a task (`PUT /tasks/{taskID}/comments` to create; `POST /tasks/{taskID}/comments/{commentID}` to update) |
+| `models.Project` | `description` | Project blurb — **same HTML pattern** when the instance shows a rich editor (if unsure, `GET` a project edited in the UI and mirror its markup) |
+| `models.Team` | `description` | Team description — treat like project when rich text is used in UI |
+
+Titles, labels, filter queries, and similar **short strings** are plain text, not HTML.
+
+**Windows + `curl.exe`:** avoid fragile inline `-d '{"comment":"…"}'` in PowerShell; write the JSON body to a **UTF-8 file** and use `--data-binary "@path"` so HTML and Cyrillic are not mangled.
+
+**Official context (UI):** [Vikunja help — Tasks](https://vikunja.io/help/tasks). OpenAPI field types alone do not document the rich-text wire format; align with HTML as returned by `GET` on real entities when in doubt.
+
 ## 5. Executing the user’s task
 
 1. Follow **§0** — attempt the task immediately; no standalone env pre-check.
