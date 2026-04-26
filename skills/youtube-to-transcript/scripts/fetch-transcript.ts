@@ -6,14 +6,12 @@
  * Default: prints plain transcript text to stdout only (no file). Logs go to stderr.
  * Optional: --file <path> saves UTF-8 text to that path (any directory; parents created).
  *
- * Usage:
+ * Run only with Bun (this skill is Bun-only):
  *   bun run fetch-transcript.ts <youtube-url-or-id> [--lang xx]
  *   bun run fetch-transcript.ts <url> --file /path/to/out.txt [--lang xx]
- *   npx --yes tsx fetch-transcript.ts <url> [--file path]
  *
- * Requires: youtube-transcript-plus (prefer global: npm install -g / bun install -g; set NODE_PATH for node/tsx if import fails; local install last resort); npm path uses tsx for .ts
- *
- * Do not invoke this file with `node` (e.g. `node fetch-transcript.ts`) — Node does not run TypeScript. Use `bun run <this-file>` or `npx --yes tsx <this-file>` only.
+ * Requires: youtube-transcript-plus — if missing, install globally: bun install -g youtube-transcript-plus
+ * (not local bun add or bun install; not npm -g; no package.json in the skill; do not run with node on this .ts file).
  */
 
 import { fetchTranscript } from 'youtube-transcript-plus';
@@ -46,7 +44,6 @@ if (!videoIdOrUrl) {
   console.error('\nUsage:');
   console.error('  bun run fetch-transcript.ts <youtube-url-or-id> [--lang xx]');
   console.error('  bun run fetch-transcript.ts <url> --file <path-to-save.txt> [--lang xx]');
-  console.error('  (npm: npx --yes tsx fetch-transcript.ts …)');
   console.error('\nDefault: transcript text to stdout. Use --file only when saving to disk.');
   process.exit(1);
 }

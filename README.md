@@ -68,7 +68,7 @@ bun run fetch-transcript "https://www.youtube.com/watch?v=VIDEO_ID" --file "tran
 
 ### Только для этого репозитория — `.agents/skills/`
 
-**YouTube to Transcript** — транскрипт в ответ; файл опционально. Скрипт `scripts/fetch-transcript/`. Зависимость: `youtube-transcript-plus` (рантайм: bun или npm по скиллу).
+**YouTube to Transcript** — транскрипт в ответ; файл опционально. Скрипт `scripts/fetch-transcript/`. Рантайм: **Bun**; `youtube-transcript-plus` — при необходимости **глобально через Bun** (`bun install -g`, не `npm -g`).
 
 **Add Knowledge** — добавление файла в `knowledge/` выбранного skill и обновление индекса в SKILL.md. После транскрипта или обработки книги/текста.
 

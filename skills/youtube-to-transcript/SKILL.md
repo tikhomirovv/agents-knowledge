@@ -4,7 +4,7 @@ description: >-
   Fetches a YouTube video transcript and returns the text to the user by default. Present the answer like a simple UI — short and substantive; avoid flags, paths, and stack talk unless something breaks or the user asks. Use when the user provides a YouTube link or video ID and wants the transcript; optional save-to-file or Add Knowledge. Triggers on "get transcript", "download transcript", "YouTube transcript", or a YouTube URL plus transcript intent.
 license: MIT
 compatibility: >-
-  Bun or Node/npm. Bundled `scripts/fetch-transcript.ts` and `youtube-transcript-plus`. The agent auto-detects the runtime; no user choice. If neither Bun nor Node+npm is on PATH, fail with a clear error (do not install runtimes in this flow). Missing package: install globally for the active stack, then re-check; project-local is last resort.
+  **Bun only.** Bundled `scripts/fetch-transcript.ts`. Missing `youtube-transcript-plus` → **only** `bun install -g youtube-transcript-plus` (never a local / project / skill-folder `bun add` or `bun install` without `-g` for this package). Not `npm install -g` either. No `package.json` in the skill. No Node.js / `npx` / `tsx`. If `bun` is not on PATH, fail clearly; do not install Bun in this flow.
 ---
 
 # YouTube to Transcript
@@ -15,7 +15,7 @@ compatibility: >-
 
 **Optional:** `--lang xx` (default `en`). **Add Knowledge** only if they want that next.
 
-**How you talk to the user** — §6. **Do not** ask which runtime, package, or “bun vs npm” — always `youtube-transcript-plus`; pick the tool by detection below.
+**How you talk to the user** — §6. **Do not** ask which package to use: always `youtube-transcript-plus` (see §4).
 
 ## Workflow
 
@@ -29,41 +29,34 @@ Missing → ask once.
 - **Save** — user asked for a file: `--file <path>` (ask for `path` once if needed).
 - **Unclear** — chat only, no `--file`.
 
-### 3. Runtime (auto — no user questions)
+### 3. Runtime (Bun only)
 
-1. `bun` on PATH → `bun run <path> …`. If `bun` and `node`+`npm` are both on PATH, **use Bun** (this branch).
-2. Else if `node` and `npm` on PATH → `npx --yes tsx <path> …` (never `node` on a `.ts` file; only `bun run` or `npx --yes tsx`).
+`bun` must be on PATH. If not → **stop with error** (the user must install Bun; you do not install it here).
 
-3. If **neither** Bun nor (Node+npm) on PATH → **stop with error**: need Bun or Node.js+npm on PATH. Do not install a runtime in this step.
+Run the script with **`bun run`** only, never with `node` on the `.ts` file.
 
-### 4. Dependency (`youtube-transcript-plus` — fixed; no choice)
+### 4. Dependency (`youtube-transcript-plus`)
 
-If the import check fails, **install that package globally** for the stack you are using, then re-check. Project-local only if global fails or the user insists.
+1. **Check (exit 0 = ok):**
+   `bun -e "import('youtube-transcript-plus').then(()=>process.exit(0)).catch(()=>process.exit(1))"`
+2. If the check **fails** → install only with **`bun install -g youtube-transcript-plus`**. Do **not**: `bun add youtube-transcript-plus` in the skill, this repo, or any project; `bun install` (without `-g`) to pull this package into a folder. Do **not** use `npm install -g` (or pnpm/yarn global) for it. Re-run the check. Do **not** add a `package.json` to the skill.
 
-Run the check from the **cwd** you use for the script (often repo root).
+`npm` / `npx` / `node` / `NODE_PATH` are not used for this skill.
 
-| Active stack | Check (0 = ok) |
-|--------|--------|
-| Bun | `bun -e "import('youtube-transcript-plus').then(()=>process.exit(0)).catch(()=>process.exit(1))"` |
-| npm | `node --input-type=module -e "import('youtube-transcript-plus').then(()=>process.exit(0)).catch(()=>process.exit(1))"` |
-
-- **npm:** `npm install -g youtube-transcript-plus` then re-check with `NODE_PATH` if needed: PowerShell `$env:NODE_PATH = (npm root -g)`; bash `NODE_PATH="$(npm root -g)"` …
-- **bun:** `bun install -g youtube-transcript-plus` — re-run `bun -e` check.
-
-**Last resort:** `bun add` / `npm install` in the project. Re-run check until it passes or you report failure.
+If the import still fails after a successful global install, report the error to the user.
 
 ### 5. Run script
 
-`<path>` = this skill’s `scripts/fetch-transcript.ts` — path relative to the directory with this `SKILL.md`. `bun run <path> …` or `npx --yes tsx <path> …` only.
+`<path>` = this skill’s `scripts/fetch-transcript.ts` — **anchor the path to the directory containing this `SKILL.md`**.
 
-- **Chat:** `bun run <path> "<id-or-url>" [--lang xx]` or `npx --yes tsx <path> "<id-or-url>" …`
-- **Save:** add `--file "<path>"`.
+- **Chat:** `bun run <path> "<id-or-url>" [--lang xx]`
+- **Save:** add `--file "<path>"`
 
 Read **stdout** = transcript; stderr = progress/errors.
 
 ### 6. Reply (user-facing)
 
-Short, plain language. **Do not** surface script paths, runtimes, or flags by default. Technical detail when something failed or the user asked.
+Short, plain language. **Do not** surface script paths, `--lang`/`--file`, or Bun by default. Technical detail when something failed or the user asked.
 
 Normalize HTML entities in text if they appear in the source.
 
@@ -71,11 +64,11 @@ Normalize HTML entities in text if they appear in the source.
 
 ## Edge cases
 
-- **No Bun and no Node+npm** — error; do not run.
+- **No `bun` on PATH** — error; do not run.
 - **No URL** — do not run.
 - **Fetch errors** — report; try another `lang` / video.
-- **Relative `--file`** — vs shell cwd; use an absolute path if the user needs a specific place.
+- **Relative `--file`** — resolved vs shell cwd; use an absolute path if the user needs a specific place.
 
 ## Summary
 
-URL/ID (ask if missing) → output (default chat) → **detect runtime** (Bun preferred, else npx+tsx) → import check + **global** package install if needed → run → answer.
+**Bun** on PATH, else error → URL/ID (ask if missing) → default chat (or `--file` if the user wanted a save) → `bun -e` import check → if needed, **`bun install -g youtube-transcript-plus` (not `npm -g`)** → `bun run <script>` → answer. One runtime only; no local package files inside the skill.

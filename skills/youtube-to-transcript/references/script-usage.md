@@ -1,6 +1,6 @@
 # Bundled script: fetch-transcript
 
-The skill picks Bun vs `npx --yes tsx` by **auto-detect** (no user question).
+**Bun only:** `bun` / `bun run` for this `.ts` file.
 
 **Default:** transcript text on **stdout** only (no file). Progress on **stderr**.
 
@@ -8,17 +8,13 @@ The skill picks Bun vs `npx --yes tsx` by **auto-detect** (no user question).
 
 ## Dependency
 
-If the import check fails in the project, **install globally** first:
+If the import check fails, install **only globally** with Bun (no local/project/skill `bun add` or non-`-g` `bun install` for this package; do not use `npm install -g`):
 
 ```bash
-npm install -g youtube-transcript-plus
-# or
 bun install -g youtube-transcript-plus
 ```
 
-For **node** after a global npm install, the same shell may need `NODE_PATH` (e.g. `NODE_PATH="$(npm root -g)"` on bash, or PowerShell `$env:NODE_PATH = (npm root -g)`) so `import('youtube-transcript-plus')` resolves.
-
-**Last resort:** install into the project (`npm install` / `bun add`).
+Re-check with `bun -e` as in `SKILL.md` §4. Do not add files under the skill folder for dependencies.
 
 ## Commands
 
@@ -28,12 +24,10 @@ For **node** after a global npm install, the same shell may need `NODE_PATH` (e.
 
 ```bash
 bun run <path> "<youtube-url-or-id>" [--lang ru]
-npx --yes tsx <path> "<youtube-url-or-id>" [--lang ru]
 ```
 
 **Save to disk**
 
 ```bash
 bun run <path> "<url-or-id>" --file "D:/notes/video.txt" [--lang ru]
-npx --yes tsx <path> "<url-or-id>" --file ./out.txt
 ```
