@@ -55,7 +55,7 @@ Run the import check from the **cwd** you use for the script (often repo root).
 
 ### 5. Run script
 
-`<path>` = this skill’s `scripts/fetch-transcript.ts`.
+`<path>` = this skill’s `scripts/fetch-transcript.ts` — **anchor paths to the directory containing this `SKILL.md`** (not the current project root). Pass that file’s path to `bun run` / `npx tsx` (absolute path is OK).
 
 - **Chat only:** `bun run <path> "<url-or-id>" [--lang xx]` or `npx --yes tsx <path> "<url-or-id>" [--lang xx]`  
   Read **stdout** for the transcript text; stderr has progress/errors.
