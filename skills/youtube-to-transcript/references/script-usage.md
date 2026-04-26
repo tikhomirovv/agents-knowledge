@@ -1,5 +1,7 @@
 # Bundled script: fetch-transcript
 
+The skill picks Bun vs `npx --yes tsx` by **auto-detect** (no user question).
+
 **Default:** transcript text on **stdout** only (no file). Progress on **stderr**.
 
 **Optional:** `--file <path>` writes UTF-8 text to that path (creates parent dirs). Not tied to any project folder unless the path says so.
