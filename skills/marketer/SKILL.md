@@ -70,3 +70,4 @@ Knowledge is in the **`knowledge/`** directory. Use it to support your answers. 
 ### Additional
 - **neurocopywriting_techniques.md** — Neurocopywriting techniques
 - **neuromarketing_principles.md** — Core neuromarketing principles
+- **bernays_propaganda_engineering_of_consent.md** — Bernays *Propaganda* for marketers: product–image–meaning triad, five message levers, checklist for creative and landing pages

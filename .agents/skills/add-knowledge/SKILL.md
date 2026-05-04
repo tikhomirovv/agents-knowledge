@@ -1,64 +1,81 @@
 ---
 name: add-knowledge
-description: Adds a new knowledge file to an existing skill and updates that skill's knowledge index in its SKILL.md. Use when the user wants to add knowledge to a skill, create a new knowledge file for a skill, document something for a skill's knowledge base, or turn content (transcript, text, document) into skill knowledge. Apply whenever the user says "add knowledge", "new knowledge file", "add to skill knowledge", or provides content to store as skill knowledge.
+description: >-
+  Adds a new knowledge file to a skill under the repo-root `skills/` directory and updates that skill's SKILL.md index.
+  Use this project-local skill to maintain **public, shareable** skills shipped in this repository (skills others can copy or install).
+  If nothing in the conversation names the target skill yet, **ask once** which `skills/<name>/` to update—do not guess silently.
 license: MIT
-compatibility: For use where skills live in a skills directory (e.g. .agents/skills/ or project skills/). Requires write access to that directory and to each skill's SKILL.md.
+compatibility: >-
+  **This repo:** workspace skills live only in **`skills/<skill_name>/`** at the **repository root** (public skills for any user).
+  This `add-knowledge` skill lives under **`.agents/skills/`** inside the project; it does **not** receive new knowledge files—only **`skills/*/knowledge/`** does.
+  Requires write access to `skills/` and each target skill's `SKILL.md`.
 ---
 
 # Add Knowledge
 
-Adds a new knowledge file to a skill and updates the skill's knowledge index so the skill can discover and use the new content.
+Adds a new knowledge file to a **public** skill under **`skills/`** (repo root) and updates that skill's knowledge index in its **`SKILL.md`**.
+
+## Role in this project
+
+| What | Where | Purpose |
+|------|--------|--------|
+| **This skill** (`add-knowledge`) | `.agents/skills/add-knowledge/` in the repo | Instructions for agents working **in this project** |
+| **Skills you update** | `skills/<skill_name>/` at **repo root** | **Shareable** skills: other people can install or copy them from the repository |
+
+- All new knowledge MUST go into **`skills/<skill_name>/knowledge/`**. Do **not** treat **`add-knowledge`** as the destination folder for KB files unless the user explicitly says so (unusual).
 
 ## What you need
 
-- **Target skill** — which skill in the skills directory the knowledge belongs to (e.g. `marketer`, `designer`). If unclear, ask or infer from the content.
-- **Content** — what to turn into knowledge: from a file (transcript, doc), from the conversation, or a brief to expand.
-- **Filename** — optional; if not given, pick a descriptive name (see naming rules below).
+- **Target skill** — the folder name under **`skills/`** (e.g. `marketer`, `designer`). **Mandatory clarification:** if neither the **current user message** nor **earlier messages in this same conversation** name the skill to update, **stop and ask once**: which **`skills/<name>/`** should receive the knowledge? Never silently choose a skill only because the topic "fits".
+- **Content** — transcript, pasted text, file, or a brief to expand.
+- **Filename** — optional; if missing, choose a descriptive English `snake_case` name (see **File naming**).
 
 ## Workflow
 
 ### 1. Locate the skill's knowledge directory and index
 
-- Knowledge files live in **`<skills_root>/<skill_name>/knowledge/`** (e.g. `.agents/skills/marketer/knowledge/` or `skills/designer/knowledge/`).
-- The skill's **SKILL.md** has a **knowledge index**: a section that lists all knowledge files with a short description and when to use each (e.g. "Knowledge base", "Available knowledge files").
+- Knowledge files live in **`skills/<skill_name>/knowledge/`** (repository root **`skills/`** only for this project's convention).
+- The target skill's **`skills/<skill_name>/SKILL.md`** must list knowledge files in its index section ("Knowledge base" or equivalent). Match the heading level and bullet style already used in that file.
 
 ### 2. Create the knowledge file
 
-- Create a new file in **`<skills_root>/<skill_name>/knowledge/`**.
-- Use the structure in **[references/knowledge-template.md](references/knowledge-template.md)**. Fill it with the user's content: main concepts, clear sections, under ~2000 words per file; split into several files if the topic is large.
+- Create **`skills/<skill_name>/knowledge/<filename>.md`**.
+- Use the structure in **[references/knowledge-template.md](references/knowledge-template.md)**. Keep one main theme per file; split if approaching ~2000 words or mixed topics.
 
 ### 3. Update the index in the skill's SKILL.md
 
-- Open **`<skills_root>/<skill_name>/SKILL.md`** and find the knowledge index section.
-- Add one entry in the same format as existing entries:
+- Open **`skills/<skill_name>/SKILL.md`** and add one entry consistent with existing index entries.
+
+Example pattern (adapt to whatever the skill already uses):
 
 ```markdown
 ### [filename].md
 Short description of what the file contains and when to use it.
 ```
 
-- Place the new entry in a logical order (e.g. by theme or alphabetically).
+- Place the entry in sensible order (theme or alphabetical).
 
 ## File naming
 
-- **Descriptive** names in **English**, words separated by **underscores**. No spaces or special characters.
+- **English** filenames, **`words_with_underscores.md`**. No spaces or stray punctuation.
 
-**Good:** `attention_traps.md`, `content_strategies.md`, `best_practices.md`  
-**Avoid:** `file1.md`, `new file.md`, `tips & tricks.md`
+**Good:** `attention_traps.md`, `content_strategies.md`, `bernays_propaganda_engineering_of_consent.md`  
+**Bad:** `file1.md`, `new file.md`, `tips & tricks.md`
 
 ## Edge cases
 
-- **Target skill or knowledge folder missing** — Create the `knowledge/` directory under the skill folder if it does not exist. If the skill itself is missing, tell the user and stop.
-- **No knowledge index in SKILL.md** — Add a section (e.g. `## Knowledge base`) and list the new file there. Match the heading level used elsewhere in that SKILL.md.
-- **Duplicate filename** — If a file with the same name already exists, suggest a different name or ask the user.
+- **Target skill omitted in the prompt** — **Ask once** which **`skills/<skill_name>/`** to use. Do **not** write into a random skill.
+- **`knowledge/` missing** — create **`skills/<skill_name>/knowledge/`**. If **`skills/<skill_name>/`** does not exist, tell the user and stop (or confirm they meant a different skill name).
+- **No index section in SKILL.md** — add a section (e.g. `## Knowledge base`) aligned with other headings in that file.
+- **Duplicate filename** — propose a different name or ask the user.
 
 ## Organization
 
-- One main topic or theme per file. Each file should be self-contained. Split when a file would get too long or cover unrelated themes.
+- One topic per file; self-contained. Split oversized or unrelated bundles.
 
 ## Checklist
 
-- [ ] New file created in `<skill_name>/knowledge/` using the structure from references/knowledge-template.md.
-- [ ] SKILL.md updated: new entry in the knowledge index with filename and short description.
-- [ ] Filename follows naming rules.
-- [ ] Content has clear headings and, where useful, examples.
+- [ ] Target **`skills/<skill_name>/`** is named in this conversation **before** writing files; if it never was named, user was asked once.
+- [ ] New file in **`skills/<skill_name>/knowledge/`** using **knowledge-template.md** structure.
+- [ ] **`skills/<skill_name>/SKILL.md`** index updated.
+- [ ] Filename is descriptive English **`snake_case`**.
