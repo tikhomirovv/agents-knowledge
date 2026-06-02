@@ -7,25 +7,40 @@ description: Universal project workflow — brainstorming, documentation, task p
 
 End-to-end skill for software projects — from first idea to shipped feature. Works at any project stage with GitHub or GitLab.
 
+## How Phases Work
+
+All four phases are **independently enterable at any time**. Sequential order is a recommendation for new projects — not a constraint.
+
+The user can jump to any phase at any moment:
+- discussed a feature in chat → go straight to Phase 3 to create issues
+- backlog exists → go straight to Phase 4 to implement
+- docs are stale → go straight to Phase 2 to update them
+- idea needs thinking through → go to Phase 1 even mid-project
+
+**Sequential flow is the default only when starting a greenfield project** or when the user explicitly says to go step by step. In all other cases, go directly to the requested phase.
+
 ## Entry Point
 
-Read the repository state first. Choose the entry point based on context:
+Read the repository state first, then pick the phase based on the user's explicit request — or, if none, based on context signals below.
+
+**User's explicit request always takes priority over context signals.**
 
 | Signal | Phase |
 |--------|-------|
-| Empty repo / greenfield, user wants to explore an idea | [1 — Brainstorm](phases/1-brainstorm.md) |
-| Code exists but `.docs/` is missing or incomplete | [2 — Docs](phases/2-docs.md) |
-| `.docs/` exists, no issues in tracker yet | [3 — Planning](phases/3-planning.md) |
-| Backlog exists, user wants to build something | [4 — Implementation](phases/4-implementation.md) |
-| "update docs" / "fix documentation" / "актуализируй документацию" | [2 — Docs](phases/2-docs.md) |
-| User names a specific issue or task number | [4 — Implementation](phases/4-implementation.md) |
-| User wants to discuss a feature before planning | [1 — Brainstorm](phases/1-brainstorm.md) |
+| "давай подумаем / обсудим / брейншторм / рассуждай" | [1 — Brainstorm](phases/1-brainstorm.md) |
+| "обнови / актуализируй документацию / README" | [2 — Docs](phases/2-docs.md) |
+| "поставь задачи / декомпозируй / создай issues / запланируй" | [3 — Planning](phases/3-planning.md) |
+| "реализуй / выполни / возьми задачу / issue #N" | [4 — Implementation](phases/4-implementation.md) |
+| Empty repo, user wants to explore an idea (no explicit phase) | [1 — Brainstorm](phases/1-brainstorm.md) |
+| Code exists but `.docs/` is missing or incomplete (no explicit phase) | [2 — Docs](phases/2-docs.md) |
+| `.docs/` exists, no issues in tracker yet (no explicit phase) | [3 — Planning](phases/3-planning.md) |
+| Backlog exists, user wants to build (no explicit phase) | [4 — Implementation](phases/4-implementation.md) |
 
-If context is ambiguous, ask once with these options before proceeding.
+If context is still ambiguous, ask once before proceeding.
 
-## Sequential Flow (New Project)
+## Sequential Flow (New Project or Feature)
 
-For greenfield projects, run phases in order:
+When starting from scratch — or when the user wants to go step by step — run phases in natural order:
 
 ```
 Phase 1 → Phase 2 → Phase 3 → Phase 4
@@ -37,11 +52,11 @@ Each phase produces artifacts that feed the next:
 - **Phase 3** outputs: issues with milestones and dependency graph
 - **Phase 4** outputs: branches, pull/merge requests, merged features
 
-## Jump-In (Existing Project)
+After completing a phase, suggest the next one — but do not force it. The user decides whether to continue or stop.
 
-Each phase is independently enterable. No need to replay earlier phases.
+## Orientation Before Any Phase
 
-Before jumping in to any phase:
+Before entering any phase, orient yourself:
 1. Check for `.docs/` — read `project-overview.md` → `prd.md` → `technical-design.md` if present.
 2. Read `README.md` if present.
 3. Check issue tracker for open issues, milestones, and blockers.
