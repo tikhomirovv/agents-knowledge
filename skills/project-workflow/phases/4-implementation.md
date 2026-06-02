@@ -4,16 +4,16 @@ Pick an issue, create a branch, implement, test, open a pull/merge request.
 
 ## Platform
 
-Detected in the main skill file. Use the appropriate CLI and discover all flags at runtime:
+Platform is detected in `SKILL.md`. Before running any platform commands, read the platform-specific file:
 
-```bash
-gh <command> --help     # GitHub
-glab <command> --help   # GitLab
-```
+- GitHub → [platforms/github.md](../platforms/github.md)
+- GitLab → [platforms/gitlab.md](../platforms/gitlab.md)
+
+These files cover: auth, CLI commands, checking blockers, CI status, and closing keywords. Always discover flag syntax at runtime via `<cli> <command> --help`.
 
 **Closing keywords in PR/MR body:**
 - GitHub: `Closes #N`
-- GitLab: `Closes #N` (also accepted: `/close #N` in comments)
+- GitLab: `Closes #N` (also accepted: `/close #N` in issue/MR comments)
 
 ## Role
 

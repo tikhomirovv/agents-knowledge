@@ -55,8 +55,10 @@ Detect the hosting platform from git remotes:
 git remote -v
 ```
 
-- Remote contains `github.com` → GitHub. CLI: `gh`
-- Remote contains `gitlab.com` or a known GitLab host → GitLab. CLI: `glab`
+- Remote contains `github.com` → **GitHub**. CLI: `gh`. Read [platforms/github.md](platforms/github.md) before running any platform-specific commands.
+- Remote contains `gitlab.com` or a known GitLab host → **GitLab**. CLI: `glab`. Read [platforms/gitlab.md](platforms/gitlab.md) before running any platform-specific commands.
+
+Read only the file that matches the detected platform. Do not load both.
 
 Always discover command syntax at runtime via `<cli> <command> --help`. Do not rely on memorized flags.
 

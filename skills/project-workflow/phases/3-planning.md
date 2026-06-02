@@ -4,14 +4,12 @@ Decompose work into issues, set milestones, establish dependencies. Works with a
 
 ## Platform
 
-Detected in the main skill file. Use the appropriate CLI and discover all command flags at runtime:
+Platform is detected in `SKILL.md`. Before running any tracker commands, read the platform-specific file:
 
-```bash
-gh <command> --help     # GitHub
-glab <command> --help   # GitLab
-```
+- GitHub → [platforms/github.md](../platforms/github.md)
+- GitLab → [platforms/gitlab.md](../platforms/gitlab.md)
 
-Never hardcode CLI flags. Always discover syntax at runtime.
+These files cover: auth, CLI commands, issue dependency API calls, boards, and tier limitations. Always discover flag syntax at runtime via `<cli> <command> --help`.
 
 ## Entity Roles
 
@@ -81,7 +79,11 @@ Every new issue must declare what it depends on. This is required, not optional.
 
 ### Setting Dependencies
 
-Use the platform CLI. Discover the exact syntax via `--help`. If the CLI does not support native dependency linking, use the platform's REST or GraphQL API (discover endpoints via the platform's API docs). Always document the dependency in the issue body as a `## Depends on` section listing issue numbers — native links are the source of truth, body text is for human readability.
+Use the platform-specific file for exact API calls and CLI commands:
+- GitHub: see `Issue Dependencies` section in [platforms/github.md](../platforms/github.md)
+- GitLab: see `Issue Dependencies` section in [platforms/gitlab.md](../platforms/gitlab.md)
+
+Always document the dependency in the issue body as a `## Depends on` section listing issue numbers — native links are the source of truth, body text is for human readability.
 
 ### How Agents Pick Work
 
