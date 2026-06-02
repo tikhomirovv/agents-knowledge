@@ -37,6 +37,7 @@ issue #N → branch issue/N-slug → implement → test → PR/MR → merge & cl
 | One issue | Exactly one issue per branch and per PR/MR (`Closes #N` for a single N). |
 | Branch base | Always branch from the updated default branch after the previous issue is merged. |
 | Next issue | Start #N+1 only when #N is merged and closed (or user explicitly overrides). |
+| Branch cleanup | After merge, delete the feature branch locally and on the remote. |
 | No batching | Do not combine multiple issues in one branch/PR/MR unless the user explicitly asks. |
 | Dependencies | Never start an issue whose blockers are still open. |
 
@@ -222,13 +223,32 @@ Closes #N
 1. Merge the PR/MR.
 2. Verify the issue is closed (auto-closes via `Closes #N` on merge). If still open, close manually and note why.
 3. Update local default branch: `git checkout main && git pull --ff-only`.
-4. Continue to the next issue.
+4. **Delete the merged feature branch** — local and remote (see [Branch cleanup after merge](#branch-cleanup-after-merge)).
+5. Continue to the next issue.
 
 **Mode B (Review-driven):**
 1. Notify the user with PR/MR link and short summary.
 2. Do not merge the PR/MR.
 3. Do not close the issue manually — it closes when the user merges.
 4. Do not start the next issue until the user merges (or explicitly says to continue).
+5. When the user confirms the PR/MR is merged (or you resume after their merge): update default branch, then **delete the merged feature branch** locally and on the remote.
+
+### Branch cleanup after merge
+
+After a successful merge into the default branch, remove **only** the feature branch for that issue (`issue/N-slug`). Do not delete `main`, `master`, or any other branch.
+
+1. Check out the default branch and pull (if not already done).
+2. Delete the local branch (safe delete — only if fully merged):
+   ```bash
+   git branch -d issue/N-slug
+   ```
+3. Delete the remote branch (skip if the platform already removed it when merging the PR/MR):
+   ```bash
+   git push origin --delete issue/N-slug
+   ```
+4. If local delete fails with "not fully merged", verify the PR/MR actually merged into the default branch before using `-D`.
+
+Do not leave merged feature branches on the remote or in the local repo unless the user explicitly asks to keep them.
 
 ## Done / Paused Templates
 
@@ -278,4 +298,5 @@ Closes #N
 | Add tests with feature code | Defer tests to a follow-up PR/MR |
 | Comment on issue at key stages | Dump verbose play-by-play on every commit |
 | Commit on feature branch | Commit directly on main/master |
+| Delete merged feature branch (local + remote) | Leave merged `issue/*` branches around |
 | Respect issue dependencies | Start blocked issues without override |
