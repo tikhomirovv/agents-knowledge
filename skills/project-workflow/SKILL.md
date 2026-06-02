@@ -27,10 +27,10 @@ Read the repository state first, then pick the phase based on the user's explici
 
 | Signal | Phase |
 |--------|-------|
-| "давай подумаем / обсудим / брейншторм / рассуждай" | [1 — Brainstorm](phases/1-brainstorm.md) |
-| "обнови / актуализируй документацию / README" | [2 — Docs](phases/2-docs.md) |
-| "поставь задачи / декомпозируй / создай issues / запланируй" | [3 — Planning](phases/3-planning.md) |
-| "реализуй / выполни / возьми задачу / issue #N" | [4 — Implementation](phases/4-implementation.md) |
+| "brainstorm / discuss / think through / let's explore" | [1 — Brainstorm](phases/1-brainstorm.md) |
+| "update docs / update README / fix documentation" | [2 — Docs](phases/2-docs.md) |
+| "create issues / decompose / plan / add to backlog" | [3 — Planning](phases/3-planning.md) |
+| "implement / execute / take issue / issue #N" | [4 — Implementation](phases/4-implementation.md) |
 | Empty repo, user wants to explore an idea (no explicit phase) | [1 — Brainstorm](phases/1-brainstorm.md) |
 | Code exists but `.docs/` is missing or incomplete (no explicit phase) | [2 — Docs](phases/2-docs.md) |
 | `.docs/` exists, no issues in tracker yet (no explicit phase) | [3 — Planning](phases/3-planning.md) |

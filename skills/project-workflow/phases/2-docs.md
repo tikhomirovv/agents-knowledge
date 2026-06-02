@@ -37,7 +37,7 @@ After updating, keep sections consistent across all files. Remove contradictions
 
 ## Updating from Context
 
-If the user asks to "update docs" or "актуализируй документацию" without specifying which file:
+If the user asks to "update docs" or "update documentation" without specifying which file:
 1. Explore the repository — code structure, recent commits, existing docs.
 2. Identify what is outdated or missing across all four documents.
 3. Report gaps to the user. Offer to fill them in **wizard mode**: one focused question at a time, updating the relevant doc after each answer.
