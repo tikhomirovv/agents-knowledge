@@ -159,6 +159,34 @@ Post brief comments on the issue via the CLI. Short — a few bullets, not a ver
 - Tests: [test command] — pass
 ```
 
+## Keeping Issue State Current
+
+Maintain accurate issue state throughout implementation — not only at the end.
+
+| Stage | Action |
+|-------|--------|
+| Branch created, work started | Set issue status to **In Progress** on the board (if one exists) |
+| Acceptance criterion completed | Tick the corresponding checkbox in the issue description |
+| PR/MR opened | Verify all completed criteria are ticked; set status to **In Review** if the board has that state |
+| Merged and closed | Confirm status is **Done**; if not auto-updated, set it manually |
+
+### Checkboxes in Issue Description
+
+When you complete an acceptance criterion, edit the issue body to reflect it. Read the current body first, then update — do not overwrite unrelated content.
+
+For platform-specific edit commands, see [platforms/github.md](../platforms/github.md) or [platforms/gitlab.md](../platforms/gitlab.md).
+
+### Labels
+
+Keep labels in sync with reality:
+- Add `status:in-progress` (or equivalent) when you start work, remove it when done.
+- If the issue turns out to be a bug rather than a feature, fix the type label.
+- Do not accumulate stale labels — remove them when they no longer apply.
+
+### Board Status
+
+If the project has a board with status columns (To Do / In Progress / In Review / Done), move the issue card at each transition. Do not leave cards in "To Do" while the branch is active, or in "In Progress" after the PR is merged.
+
 ## Step 5 — Verify
 
 1. Run the project's documented test command locally when the toolchain is available.

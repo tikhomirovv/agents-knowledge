@@ -116,6 +116,42 @@ Also accepted as a slash command in comments:
 ```
 The issue closes automatically when the MR is merged.
 
+## Updating Issue State During Implementation
+
+### Checkboxes in issue description
+
+Read the current description, update checkboxes, write back:
+```bash
+# Read current description
+glab issue view N --output json | jq .description
+
+# Write updated description
+glab issue update N --description "UPDATED_DESCRIPTION"
+```
+
+Tick a checkbox by changing `- [ ]` to `- [x]` for the completed criterion only. Do not overwrite unrelated content.
+
+### Issue status on a GitLab board
+
+GitLab tracks issue status primarily through **labels**. Move the issue card by updating its labels:
+
+```bash
+# Mark as in progress
+glab issue update N --label "status::in-progress"
+
+# Mark as in review (when MR is open)
+glab issue update N --unlabel "status::in-progress" --label "status::in-review"
+```
+
+Label names depend on the project's label setup. Use `glab label list` to see what's available. Scoped labels (`status::*`) are a GitLab convention — only one value in a scope can be active at a time.
+
+### Issue state (open/closed)
+
+GitLab issues have two states: open and closed. Closing happens automatically via `Closes #N` on MR merge. If it doesn't close automatically, close manually:
+```bash
+glab issue close N
+```
+
 ## Checking CI Status
 
 ```bash

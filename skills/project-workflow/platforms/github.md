@@ -98,6 +98,49 @@ Closes #N
 ```
 The issue closes automatically when the PR is merged. One closing keyword per issue; one issue per PR (unless user explicitly requests a batch).
 
+## Updating Issue State During Implementation
+
+### Checkboxes in issue description
+
+Read the current body, update checkboxes, write back:
+```bash
+# Read current body
+gh issue view N --json body --jq .body
+
+# Write updated body (replace content, preserve everything else)
+gh issue edit N --body "UPDATED_BODY"
+```
+
+Tick a checkbox by changing `- [ ]` to `- [x]` for the completed criterion only.
+
+### Issue status on a GitHub Projects board
+
+Move the issue card to the correct status column as work progresses:
+
+```bash
+# Find the project item ID
+ITEM_ID=$(gh project item-list PROJECT_NUMBER --owner OWNER --format json \
+  --jq ".items[] | select(.content.number == ISSUE_NUMBER) | .id")
+
+# Find the status field ID and option ID for the desired status
+gh project field-list PROJECT_NUMBER --owner OWNER --format json
+
+# Update the status field
+gh project item-edit --project-id PROJECT_ID \
+  --id ITEM_ID \
+  --field-id STATUS_FIELD_ID \
+  --single-select-option-id OPTION_ID
+```
+
+Discover exact option IDs via `gh project field-list` — status options vary per project.
+
+### Labels
+
+```bash
+gh issue edit N --add-label "status:in-progress"
+gh issue edit N --remove-label "status:in-progress" --add-label "status:in-review"
+```
+
 ## Checking CI Status
 
 ```bash
