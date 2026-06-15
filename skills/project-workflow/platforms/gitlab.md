@@ -116,6 +116,27 @@ Also accepted as a slash command in comments:
 ```
 The issue closes automatically when the MR is merged.
 
+## MR Source Branch
+
+`glab mr create -i N` derives the source branch from the **issue title slug** (e.g. `4-bind-mcp-session-to-authenticated-user`), not from the Phase 4 convention `issue/<N>-<short-slug>`. If commits are already on `issue/N-slug`, the MR ends up on a different (often empty) branch — 0 commits, empty diff.
+
+**Rule:** MR source branch = branch with your commits. Never mix conventions.
+
+**Recommended flow:**
+1. Push `issue/<N>-<short-slug>`.
+2. Create MR **without** `-i`, set source explicitly:
+   ```bash
+   glab mr create -s issue/N-short-slug -t "..." -d "..." -y
+   ```
+3. Put `Closes #N` in the description.
+
+**If MR was already created via `-i`:** push to the branch the MR expects:
+```bash
+git push origin issue/N-short-slug:<mr-source-branch-from-glab-mr-view>
+```
+
+**Before "Ready for review":** `glab mr view` → source branch matches feature branch; MR has commits/diff; no orphan empty remote branch.
+
 ## Updating Issue State During Implementation
 
 ### Checkboxes in issue description
