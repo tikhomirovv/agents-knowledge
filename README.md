@@ -6,7 +6,7 @@
 
 | Расположение | Назначение |
 |--------------|------------|
-| **`skills/`** | Навыки для установки в другие проекты (sharing). Можно ставить через `npx skills add` и использовать в любом репозитории. |
+| **`skills/`** | Навыки для установки в другие проекты (sharing). Можно ставить через `bun x skills add` (или `npx skills add`) и использовать в любом репозитории. |
 | **`.agents/skills/`** | Навыки для работы только внутри этого репозитория: транскрипции YouTube, добавление знаний в skill и т.п. |
 
 ## Назначение проекта
@@ -21,7 +21,8 @@
 Навыки из `skills/` можно установить в любой проект через CLI:
 
 ```bash
-npx skills add https://github.com/tikhomirovv/agents-knowledge/skills --skill <skill-name>
+# or: npx skills add ...
+bun x skills add https://github.com/tikhomirovv/agents-knowledge/skills --skill <skill-name>
 ```
 
 Примеры: `--skill marketer`, `--skill designer`. После установки подключайте нужный skill в Cursor/агента по инструкциям CLI.
@@ -41,7 +42,7 @@ npx skills add https://github.com/tikhomirovv/agents-knowledge/skills --skill <s
 
 ### Транскрипции с YouTube
 
-**Bun** (или Node + `npx tsx` для скилла). Установка: `bun install`. Скрипт: `scripts/fetch-transcript/fetch-transcript.ts`.
+**Bun** (или Node + `bun x tsx` / `npx tsx` для скилла). Установка: `bun install`. Скрипт: `scripts/fetch-transcript/fetch-transcript.ts`.
 
 ```powershell
 # Из корня проекта — текст в stdout
@@ -64,7 +65,7 @@ bun run fetch-transcript "https://www.youtube.com/watch?v=VIDEO_ID" --file "tran
 - UI/UX, интерфейсы, дизайн-системы. Для интерфейсов, прототипов, типографики, цвета, доступности. Знания в `knowledge/` (в т.ч. refactoring_ui).
 
 Установка в другой проект:  
-`npx skills add https://github.com/tikhomirovv/agents-knowledge/skills --skill marketer` (или `designer`).
+`bun x skills add https://github.com/tikhomirovv/agents-knowledge/skills --skill marketer` (или `designer`; альтернатива: `npx skills add ...`).
 
 ### Только для этого репозитория — `.agents/skills/`
 
