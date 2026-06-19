@@ -71,9 +71,9 @@ Track progress with this checklist:
 - [ ] Acceptance criteria implemented
 - [ ] Tests added/updated in the same change set
 - [ ] Tests pass locally or CI is green after push
-- [ ] Issue commented at key stages
-- [ ] PR/MR opened (`Closes #N`)
+- [ ] PR/MR opened (`Closes #N`) + issue comment
 - [ ] Mode gate applied
+- [ ] Task Completion when issue closes (checkboxes + closure comment)
 
 ## Step 1 — Orient
 
@@ -138,7 +138,8 @@ Post brief comments on the issue via the CLI. Short — a few bullets, not a ver
 | Branch created | Yes | Branch name, brief plan |
 | Major milestone reached | Yes, if non-obvious | "Schema migration added", "API port wired" |
 | Blocked — need human input | **Required** | Question + what is done + branch |
-| Done — PR/MR opened | **Required** | Summary + PR/MR link + test status |
+| PR/MR opened | **Required** | Summary + PR/MR link + test status |
+| Issue merged/closed | **Required** | Done summary — see [Task Completion](#task-completion) |
 
 **Blocked comment template:**
 ```markdown
@@ -149,7 +150,7 @@ Post brief comments on the issue via the CLI. Short — a few bullets, not a ver
 **Blocker:** [one focused question]
 ```
 
-**Final comment template:**
+**PR opened comment:**
 ```markdown
 ✅ **Ready for review**
 
@@ -160,6 +161,25 @@ Post brief comments on the issue via the CLI. Short — a few bullets, not a ver
 - Tests: [test command] — pass
 ```
 
+## Task Completion
+
+Whenever an issue is finished — MR merged, user asks to merge/close, or confirms the task is done (GitHub and GitLab alike):
+
+1. **Re-read the issue** if criteria or checkbox state are not fresh in context (`gh issue view N` / `glab issue view N`).
+2. **Tick all done checkboxes** in the description — read body first, only change `- [ ]` → `- [x]` for completed items (edit commands: [github.md](../platforms/github.md) / [gitlab.md](../platforms/gitlab.md)).
+3. **Post a closure comment** on the issue — required; chat alone is not enough.
+4. **Board/labels** → Done; remove in-progress labels if the project uses them.
+
+**Closure comment:**
+```markdown
+✅ **Done**
+
+**PR/MR:** #M or URL
+
+- [criterion → what was delivered]
+- Tests: [command] — pass
+```
+
 ## Keeping Issue State Current
 
 Maintain accurate issue state throughout implementation — not only at the end.
@@ -168,14 +188,12 @@ Maintain accurate issue state throughout implementation — not only at the end.
 |-------|--------|
 | Branch created, work started | Set issue status to **In Progress** on the board (if one exists) |
 | Acceptance criterion completed | Tick the corresponding checkbox in the issue description |
-| PR/MR opened | Verify all completed criteria are ticked; set status to **In Review** if the board has that state |
-| Merged and closed | Confirm status is **Done**; if not auto-updated, set it manually |
+| PR/MR opened | Set status to **In Review** if the board has that state |
+| Merged/closed | Run [Task Completion](#task-completion) |
 
 ### Checkboxes in Issue Description
 
-When you complete an acceptance criterion, edit the issue body to reflect it. Read the current body first, then update — do not overwrite unrelated content.
-
-For platform-specific edit commands, see [platforms/github.md](../platforms/github.md) or [platforms/gitlab.md](../platforms/gitlab.md).
+Tick criteria as you complete them during work. Before closing the issue, re-read the body and ensure **all done items are checked** — see Task Completion.
 
 ### Labels
 
@@ -221,17 +239,18 @@ Closes #N
 
 **Mode A (Autonomous):**
 1. Merge the PR/MR.
-2. Verify the issue is closed (auto-closes via `Closes #N` on merge). If still open, close manually and note why.
-3. Update local default branch: `git checkout main && git pull --ff-only`.
-4. **Delete the merged feature branch** — local and remote (see [Branch cleanup after merge](#branch-cleanup-after-merge)).
-5. Continue to the next issue.
+2. Verify the issue is closed (auto-closes via `Closes #N` on merge). If still open, close manually.
+3. Run [Task Completion](#task-completion).
+4. Update local default branch: `git checkout main && git pull --ff-only`.
+5. **Delete the merged feature branch** — local and remote (see [Branch cleanup after merge](#branch-cleanup-after-merge)).
+6. Continue to the next issue.
 
 **Mode B (Review-driven):**
 1. Notify the user with PR/MR link and short summary.
 2. Do not merge the PR/MR.
 3. Do not close the issue manually — it closes when the user merges.
 4. Do not start the next issue until the user merges (or explicitly says to continue).
-5. When the user confirms the PR/MR is merged (or you resume after their merge): update default branch, then **delete the merged feature branch** locally and on the remote.
+5. When the user confirms the PR/MR is merged (or you resume after their merge): run [Task Completion](#task-completion), update default branch, then **delete the merged feature branch** locally and on the remote.
 
 ### Branch cleanup after merge
 
@@ -296,7 +315,7 @@ Do not leave merged feature branches on the remote or in the local repo unless t
 | Ask execution mode (A/B) once per session | Assume mode without asking |
 | Read `.docs/` and `README.md` before coding | Store long-term requirements only in issues |
 | Add tests with feature code | Defer tests to a follow-up PR/MR |
-| Comment on issue at key stages | Dump verbose play-by-play on every commit |
+| Comment on issue at key stages (incl. closure) | Skip issue comments at PR open or close |
 | Commit on feature branch | Commit directly on main/master |
 | Delete merged feature branch (local + remote) | Leave merged `issue/*` branches around |
 | Respect issue dependencies | Start blocked issues without override |
