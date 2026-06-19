@@ -126,7 +126,8 @@ The issue closes automatically when the MR is merged.
 1. Push `issue/<N>-<short-slug>`.
 2. Create MR **without** `-i`, set source explicitly:
    ```bash
-   glab mr create -s issue/N-short-slug -t "..." -d "..." -y
+   glab mr create -s issue/N-short-slug -t "..." -d "..." \
+     --squash-before-merge --remove-source-branch -y
    ```
 3. Put `Closes #N` in the description.
 
@@ -136,6 +137,24 @@ git push origin issue/N-short-slug:<mr-source-branch-from-glab-mr-view>
 ```
 
 **Before "Ready for review":** `glab mr view` → source branch matches feature branch; MR has commits/diff; no orphan empty remote branch.
+
+## Squash Merge & Branch Cleanup
+
+Default for this workflow: **squash all branch commits into one on merge**, **delete the source branch** after merge.
+
+`glab` supports both at MR creation and at merge time — always use CLI flags; do not rely on project defaults alone.
+
+| When | Flags |
+|------|-------|
+| `glab mr create` | `--squash-before-merge` `--remove-source-branch` |
+| `glab mr merge` | `-s` (squash) `-d` (remove source branch) |
+
+When the agent merges (Phase 4, Mode A):
+```bash
+glab mr merge N -s -d -y
+```
+
+Set flags at **create** (MR defaults) and again at **merge** (explicit enforcement). After merge, confirm the remote feature branch is gone.
 
 ## Updating Issue State During Implementation
 
