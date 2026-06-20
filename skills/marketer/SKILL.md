@@ -67,6 +67,20 @@ Knowledge is in the **`knowledge/`** directory. Use it to support your answers. 
 - **cultural_social_aspects.md** — Cultural and social aspects
 - **neuromarketing_tools.md** — Practical neuromarketing tools
 
+### Growth, channels, and conversion systems
+- **traffic_sources_and_go_to_market_strategy.md** — Traffic “donors”, early-stage channel focus, paid vs content, virality realities
+- **performance_marketing_unit_economics_subscriptions.md** — Paid funnel math (CPM→CTR→…→CAC), payback, creative as the highest-leverage lever
+- **social_algorithms_collaborative_filtering.md** — How social feeds distribute content (collaborative filtering), metrics that drive reach and cheaper delivery
+- **content_strategy_problem_oriented_video.md** — Problem-oriented content strategy, content mix, pain research workflow
+- **short_video_hooks_playbook.md** — 3-second hooks for short video: formulas, templates, testing loop
+- **long_video_thumbnails_titles_retention.md** — Long video packaging: thumbnails, titles, retention, safe testing loop
+- **video_scriptwriting_vsl_three_act.md** — Script frameworks (hook types, 3-act structure, GTM→script mapping)
+- **telegram_b2b_warmup_channel_playbook.md** — Telegram as warmup hub: cadence, metrics, funnel into demo/sales
+- **telegram_ads_subscriber_acquisition.md** — Buying Telegram subscribers: testing, CTR/click→sub/CPS, promote best posts
+- **customer_awareness_levels_messaging.md** — Awareness levels model and how to adapt messaging/CTAs across the funnel
+- **value_based_pricing_for_saas.md** — Value-based pricing, 1/10 rule, cost floor, segmentation workflow
+- **gtm_manifesto_idea_filter.md** — GTM manifesto fields + idea due diligence checklist before burning budget
+
 ### Additional
 - **neurocopywriting_techniques.md** — Neurocopywriting techniques
 - **neuromarketing_principles.md** — Core neuromarketing principles
