@@ -1,87 +1,66 @@
 ---
 name: project-workflow
-description: Universal project workflow — brainstorming, documentation, task planning, and implementation. Works with GitHub and GitLab. Use when starting a new project, discussing a feature, updating project docs, decomposing work into issues, or implementing tasks from a backlog. Triggers on "project workflow", "start project", "update docs", "create issues", "implement task", "take issue", "work on feature", or when the user wants end-to-end project support at any stage.
+description: Universal project workflows for software repos — brainstorm ideas, maintain docs, research and file backlog issues, implement with PR/MR. Works with GitHub and GitLab. Use when discussing features, exploring the codebase, creating or updating issues, writing documentation, or implementing tracked work.
 ---
 
 # Project Workflow
 
-End-to-end skill for software projects — from first idea to shipped feature. Works at any project stage with GitHub or GitLab.
+A set of **independent workflows** for common project work. Pick the workflow that matches the user's request — there is no required order.
 
-## How Phases Work
+**User's explicit request always wins** over heuristics below.
 
-All four phases are **independently enterable at any time**. Sequential order is a recommendation for new projects — not a constraint.
+## Platform
 
-The user can jump to any phase at any moment:
-- discussed a feature in chat → go straight to Phase 3 to create issues
-- backlog exists → go straight to Phase 4 to implement
-- docs are stale → go straight to Phase 2 to update them
-- idea needs thinking through → go to Phase 1 even mid-project
+Detect from git remotes (`git remote -v`):
 
-**Sequential flow is the default only when starting a greenfield project** or when the user explicitly says to go step by step. In all other cases, go directly to the requested phase.
+| Remote | CLI | Reference |
+|--------|-----|-----------|
+| `github.com` | `gh` | [platforms/github.md](platforms/github.md) |
+| GitLab host | `glab` | [platforms/gitlab.md](platforms/gitlab.md) |
 
-## Entry Point
+Read only the matching platform file before tracker or PR/MR commands. Discover flags via `<cli> <command> --help`.
 
-Read the repository state first, then pick the phase based on the user's explicit request — or, if none, based on context signals below.
+## Shared references
 
-**User's explicit request always takes priority over context signals.**
+| File | Use |
+|------|-----|
+| [shared/orientation.md](shared/orientation.md) | Read before any workflow |
+| [shared/tracker-issues.md](shared/tracker-issues.md) | Create, edit, blockers, labels (backlog + implementation comments) |
+| [shared/issue-template.md](shared/issue-template.md) | Issue body structure |
 
-| Signal | Phase |
-|--------|-------|
-| "brainstorm / discuss / think through / let's explore" | [1 — Brainstorm](phases/1-brainstorm.md) |
-| "update docs / update README / fix documentation" | [2 — Docs](phases/2-docs.md) |
-| "create issues / decompose / plan / add to backlog" | [3 — Planning](phases/3-planning.md) |
-| "implement / execute / take issue / issue #N" | [4 — Implementation](phases/4-implementation.md) |
-| Empty repo, user wants to explore an idea (no explicit phase) | [1 — Brainstorm](phases/1-brainstorm.md) |
-| Code exists but `.docs/` is missing or incomplete (no explicit phase) | [2 — Docs](phases/2-docs.md) |
-| `.docs/` exists, no issues in tracker yet (no explicit phase) | [3 — Planning](phases/3-planning.md) |
-| Backlog exists, user wants to build (no explicit phase) | [4 — Implementation](phases/4-implementation.md) |
+## Workflow router
 
-If context is still ambiguous, ask once before proceeding.
+| User signal | Workflow |
+|-------------|----------|
+| brainstorm, explore ideas, think through options, PRD-level discussion | [workflows/brainstorm.md](workflows/brainstorm.md) |
+| update docs, README, `.docs/`, AGENTS.md | [workflows/documentation.md](workflows/documentation.md) |
+| how does X work, problem, bug report, idea, tradeoffs, create/update issue, backlog, «answer only» | [workflows/backlog.md](workflows/backlog.md) |
+| implement, fix, take issue #N, code changes, PR/MR | [workflows/implementation.md](workflows/implementation.md) |
 
-## Sequential Flow (New Project or Feature)
+If ambiguous, ask once which workflow fits.
 
-When starting from scratch — or when the user wants to go step by step — run phases in natural order:
+## Optional sequences (not mandatory)
+
+Common paths — user may skip or reorder freely:
 
 ```
-Phase 1 → Phase 2 → Phase 3 → Phase 4
+brainstorm → documentation → backlog → implementation
+brainstorm → backlog → implementation
+backlog → implementation
 ```
 
-Each phase produces artifacts that feed the next:
-- **Phase 1** outputs: validated concept, requirements, design decisions
-- **Phase 2** outputs: `.docs/` files, `README.md`
-- **Phase 3** outputs: issues with milestones and dependency graph
-- **Phase 4** outputs: branches, pull/merge requests, merged features
+Examples:
+- New product idea: brainstorm → capture in docs → backlog issues → implement
+- Existing repo: backlog (research + file issue) → implementation
+- Docs-only request: documentation only
 
-After completing a phase, suggest the next one — but do not force it. The user decides whether to continue or stop.
+## Boundaries between workflows
 
-## Orientation Before Any Phase
+| Workflow | Changes code? | Changes tracker? | Changes docs? |
+|----------|---------------|------------------|---------------|
+| brainstorm | No | No | No (may recommend) |
+| documentation | No | No | Yes |
+| backlog | No | Yes (when asked) | No |
+| implementation | Yes | Comments / state only | Only if issue requires |
 
-Before entering any phase, orient yourself:
-1. Check for `.docs/` — read `project-overview.md` → `prd.md` → `technical-design.md` if present.
-2. Read `README.md` if present.
-3. Check issue tracker for open issues, milestones, and blockers.
-4. Use whatever is found as context. Do not re-run earlier phases unless the user asks.
-
-## Platform Detection
-
-Detect the hosting platform from git remotes:
-
-```bash
-git remote -v
-```
-
-- Remote contains `github.com` → **GitHub**. CLI: `gh`. Read [platforms/github.md](platforms/github.md) before running any platform-specific commands.
-- Remote contains `gitlab.com` or a known GitLab host → **GitLab**. CLI: `glab`. Read [platforms/gitlab.md](platforms/gitlab.md) before running any platform-specific commands.
-
-Read only the file that matches the detected platform. Do not load both.
-
-Always discover command syntax at runtime via `<cli> <command> --help`. Do not rely on memorized flags.
-
-## Phases
-
-Read the relevant phase file when entering that phase:
-
-- [Phase 1 — Brainstorm & PRD](phases/1-brainstorm.md)
-- [Phase 2 — Documentation](phases/2-docs.md)
-- [Phase 3 — Planning](phases/3-planning.md)
-- [Phase 4 — Implementation](phases/4-implementation.md)
+Backlog creation and issue grooming belong to **backlog**, not implementation.

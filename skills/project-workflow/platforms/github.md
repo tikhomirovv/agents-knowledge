@@ -2,6 +2,8 @@
 
 Read this file when the repository is hosted on GitHub (remote contains `github.com`). CLI: `gh`.
 
+Issue create/edit/decomposition: [shared/tracker-issues.md](../shared/tracker-issues.md). This file covers GitHub-specific auth, blockers API, projects, PR/MR, and CI.
+
 ## Authentication
 
 Authenticate once via `gh auth login`. All subsequent `gh` and `gh api` calls use this token automatically — no separate API credentials needed.

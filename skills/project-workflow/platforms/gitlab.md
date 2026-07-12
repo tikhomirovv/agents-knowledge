@@ -2,6 +2,8 @@
 
 Read this file when the repository is hosted on GitLab (remote contains `gitlab.com` or a self-managed GitLab host). CLI: `glab`.
 
+Issue create/edit/decomposition: [shared/tracker-issues.md](../shared/tracker-issues.md). This file covers GitLab-specific auth, links API, boards, MR, and CI.
+
 ## Authentication
 
 Authenticate once via `glab auth login`. All subsequent `glab` and `glab api` calls use this token automatically — no separate API credentials needed.
@@ -118,7 +120,7 @@ The issue closes automatically when the MR is merged.
 
 ## MR Source Branch
 
-`glab mr create -i N` derives the source branch from the **issue title slug** (e.g. `4-bind-mcp-session-to-authenticated-user`), not from the Phase 4 convention `issue/<N>-<short-slug>`. If commits are already on `issue/N-slug`, the MR ends up on a different (often empty) branch — 0 commits, empty diff.
+`glab mr create -i N` derives the source branch from the **issue title slug** (e.g. `4-bind-mcp-session-to-authenticated-user`), not from the implementation convention `issue/<N>-<short-slug>`. If commits are already on `issue/N-slug`, the MR ends up on a different (often empty) branch — 0 commits, empty diff.
 
 **Rule:** MR source branch = branch with your commits. Never mix conventions.
 
