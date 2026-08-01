@@ -46,4 +46,9 @@ Knowledge is in `knowledge/`. Read only what matches the user’s current task (
 - **mvp_approaches_and_dvf_framework.md** — DVF (desirable/viable/feasible) + 5 MVP approaches (concierge, wizard-of-oz, prototype, minimal code)
 - **prd_structure_and_ai_workflow.md** — PRD structure (2025), step-by-step PRD creation, how to use AI responsibly
 - **b2c_ideation_validation_traffic_tests.md** — B2C ideation: why interviews lie, landing+traffic tests, what metrics to watch
+- **value_creation_cognitive_model.md** — Value as benefit−investment delta; brain resource model; goal trees; value mechanics (reliability, bundling, sub-task elimination, segments, habits)
+- **hypothesis_driven_pm_lean_canvas_metrics.md** — Uncertainty as hypotheses; Lean Canvas blocks; validation order; early adopters; AARRR/HEART; validation ladder (logs → interviews → A/B)
+- **product_thinking_no_prioritization_edge_cases.md** — Saying no; 5 feature-filter questions; edge-case UI checklist; inverted/anti-design; Vasa scope lessons; Five Whys
+- **emotional_design_brain_habits_biases.md** — Emotions over pure utility; interview limits; biases; decision fatigue; dopamine/variable reward; Fogg + Hook; habit/ability hacks; peak–end UX
+- **customer_development_interview_methodology.md** — CustDev when/why; interview tools; 5–10 sample; good/bad questions; no future fiction; 3-part interview; finding users; social-pleasing traps
 
