@@ -15,7 +15,7 @@ Platform CLI details: [platforms/github.md](../platforms/github.md) or [platform
 | Reopen | `gh issue reopen N` | `glab issue reopen N` |
 | Close | `gh issue close N` | `glab issue close N` |
 
-Use `--body-file` or heredoc for multi-line bodies.
+Use `--body-file` / `-F` from a **UTF-8 file** (no BOM). Never put issue/MR body in a shell string (`--description "…"`, `--body "…"`) — PowerShell/cmd re-encodes UTF-8 into mojibake (`Р`, `Ð`). After create/update, `issue view`: if Cyrillic looks like `Р’`/`Ð`, rewrite from the same file.
 
 ## Every new issue
 

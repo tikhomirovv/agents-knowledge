@@ -4,6 +4,8 @@ Read this file when the repository is hosted on GitLab (remote contains `gitlab.
 
 Issue create/edit/decomposition: [shared/tracker-issues.md](../shared/tracker-issues.md). This file covers GitLab-specific auth, links API, boards, MR, and CI.
 
+**UTF-8 bodies:** write a file, pass `-F` / `description=@file`. Never `--description "кириллица"` in the shell. `glab issue view` after write — `Р`/`Ð` garbage means redo from file.
+
 ## Authentication
 
 Authenticate once via `glab auth login`. All subsequent `glab` and `glab api` calls use this token automatically — no separate API credentials needed.
@@ -22,7 +24,7 @@ Always discover flags at runtime: `glab <command> --help`
 | Task | Command |
 |------|---------|
 | List issues | `glab issue list` |
-| Create issue | `glab issue create` |
+| Create issue | `glab issue create -F body.md` |
 | View issue | `glab issue view N` |
 | Close issue | `glab issue close N` |
 | Create MR | `glab mr create` |
@@ -131,7 +133,7 @@ The issue closes automatically when the MR is merged.
    glab mr create -s issue/N-short-slug -t "..." -d "..." \
      --squash-before-merge --remove-source-branch -y
    ```
-3. Put `Closes #N` in the description.
+3. Put `Closes #N` in the MR description (UTF-8 file / `-F`, not a quoted shell string).
 
 **If MR was already created via `-i`:** push to the branch the MR expects:
 ```bash
@@ -162,13 +164,11 @@ Set flags at **create** (MR defaults) and again at **merge** (explicit enforceme
 
 ### Checkboxes in issue description
 
-Read the current description, update checkboxes, write back:
+Read the current description, tick checkboxes in a UTF-8 file, write back via file (not a shell string):
 ```bash
-# Read current description
-glab issue view N --output json | jq .description
-
-# Write updated description
-glab issue update N --description "UPDATED_DESCRIPTION"
+glab issue view N --output json | jq -r .description > body.md
+# edit checkboxes in body.md (- [ ] → - [x] for completed items only)
+glab api --method PUT projects/:fullpath/issues/N -f description=@body.md
 ```
 
 Tick a checkbox by changing `- [ ]` to `- [x]` for the completed criterion only. Do not overwrite unrelated content.
